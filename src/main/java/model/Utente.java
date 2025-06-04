@@ -1,29 +1,42 @@
-package model;
+package Model;
 
-/**
- * The type Utente.
- */
+import DAO.LoginDAO;
+import implementazioneDAO.LoginImplementazioneDAO;
+
+import java.util.ArrayList;
+
 public class Utente {
-    private final String login;
+    //Attributi
+    private String nome;
     private String password;
+    private ArrayList<Utente> utenti;
 
-    /**
-     * Instantiates a new Utente.
-     *
-     * @param login    the login
-     * @param password the password
-     */
-    public Utente(String login, String password) {
-        this.login = login;
+    //costruttore
+    public Utente(String nome, String password) {
+        this.nome = nome;
         this.password = password;
+
+        utenti = new ArrayList<Utente>();
     }
 
-    /**
-     * Gets login.
-     *
-     * @return the login
-     */
-    public String getLogin() {
-        return login;
+    //metodi da implementare
+    public void registrazione(String nome, String password) {
+        Utente u = new Utente(nome, password);
+        utenti.add(u);
+    };
+
+    public void eseguiLogin(String nome, String password) {
+        LoginDAO utenteLogin = new LoginImplementazioneDAO();
+        utenteLogin.eseguiLoginDB(nome, password);
+    }
+
+    //getter
+    public String getNome() {
+        return nome;
+    }
+
+    //setter
+    public void setNome(String nome) {
+        this.nome = nome;
     }
 }
