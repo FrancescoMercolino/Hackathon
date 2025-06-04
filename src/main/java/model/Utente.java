@@ -3,16 +3,17 @@ package Model;
 import DAO.LoginDAO;
 import implementazioneDAO.LoginImplementazioneDAO;
 
+import java.sql.SQLException;
 import java.util.ArrayList;
 
 public class Utente {
     //Attributi
     private String nome;
-    private String password;
+    private char[] password;
     private ArrayList<Utente> utenti;
 
     //costruttore
-    public Utente(String nome, String password) {
+    public Utente(String nome, char[] password) {
         this.nome = nome;
         this.password = password;
 
@@ -20,12 +21,12 @@ public class Utente {
     }
 
     //metodi da implementare
-    public void registrazione(String nome, String password) {
+    public void registrazione(String nome, char[] password) {
         Utente u = new Utente(nome, password);
         utenti.add(u);
     };
 
-    public void eseguiLogin(String nome, String password) {
+    public void eseguiLogin(String nome, char[] password) throws SQLException {
         LoginDAO utenteLogin = new LoginImplementazioneDAO();
         utenteLogin.eseguiLoginDB(nome, password);
     }

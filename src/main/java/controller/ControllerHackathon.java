@@ -23,12 +23,12 @@ public class ControllerHackathon {
     //Metodi
 
 
-    public boolean login(String nome, String password) {
+    public boolean login(String nome, char[] password) throws SQLException {
         LoginDAO utenteLogin = new LoginImplementazioneDAO();
         return utenteLogin.eseguiLoginDB(nome, password);
     }
 
-    public void registraUtenteDB(String nome, String password) throws SQLException {
+    public void registraUtenteDB(String nome, char[] password) throws SQLException {
         Utente u = new Utente(nome, password);
         u.registrazione(nome, password);
 

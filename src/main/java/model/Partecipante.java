@@ -3,7 +3,7 @@ package Model;
 public class Partecipante extends Utente{
 
     //costruttore
-    public Partecipante(String nome, String password) {
+    public Partecipante(String nome, char[] password) {
         super(nome, password);
     }
     //metodo da implementare

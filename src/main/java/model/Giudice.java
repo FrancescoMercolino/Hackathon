@@ -3,7 +3,7 @@ package Model;
 public class Giudice extends Utente{
 
     //costruttore
-    public Giudice(String nome, String password) {
+    public Giudice(String nome, char[] password) {
         super(nome, password);
     }
 

@@ -1,11 +1,11 @@
 package GUI;
 
 import Controller.ControllerHackathon;
-import Model.Piattaforma;
 
 import javax.swing.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.sql.SQLException;
 
 public class HomeHackathon {
 
@@ -28,7 +28,6 @@ public class HomeHackathon {
         frame.setContentPane(new HomeHackathon().panel1);
         frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         frame.pack();
-        frame.setSize(900, 600);
         frame.setVisible(true);
     }
 
@@ -47,7 +46,20 @@ public class HomeHackathon {
         loginButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                controller.login(textField1.getText(), passwordField1.getText());
+                try {
+                    boolean log = controller.login(textField1.getText(), passwordField1.getPassword());
+                    if (log) {
+                        JOptionPane.showMessageDialog(frame, "Login efettuato!");
+                        SchermataPartecipante partecipante = new SchermataPartecipante(controller, frame);
+                        partecipante.frame.setVisible(true);
+                        frame.setVisible(false);
+                    } else {
+                        JOptionPane.showMessageDialog(frame, "Errore Login!");
+                    }
+
+                } catch (SQLException ex) {
+                    throw new RuntimeException(ex);
+                }
             }
         });
     }

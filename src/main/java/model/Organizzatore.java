@@ -5,7 +5,7 @@ import java.util.Date;
 public class Organizzatore extends Utente{
 
     //costruttore
-    public Organizzatore(String nome, String password) {
+    public Organizzatore(String nome, char[] password) {
         super(nome, password);
     }
 

@@ -27,18 +27,22 @@ public class SchermataRegistrazione {
         frame.setVisible(true);
 
 
-
-        this.ruoloComboBox.addItem((""));
-        this.ruoloComboBox.addItem("Partecipante");
-        this.ruoloComboBox.addItem("Giudice");
-        this.ruoloComboBox.addItem("Organizzatore");
-
-
         confermaButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
+                if (textNome.getText().isEmpty() || textPassword.getPassword().length == 0 ) {
+                    JOptionPane.showMessageDialog(frame, "Compila i campi");
+                    return;
+                }
+
+                if (textPassword.getPassword().length < 6) {
+                    JOptionPane.showMessageDialog(frame, "Password troppo breve");
+                    return;
+                }
+
                 try {
-                    controller.registraUtenteDB(textNome.getText(), textPassword.getText());
+                    controller.registraUtenteDB(textNome.getText(), textPassword.getPassword());
+                    JOptionPane.showMessageDialog(panelRegistrazione, "Registrazione con successo!");
                 } catch (SQLException ex) {
                     throw new RuntimeException(ex);
                 }

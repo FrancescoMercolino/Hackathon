@@ -4,5 +4,5 @@ import java.sql.SQLException;
 
 public interface RegistrazioneDAO {
 
-    void registraUtente(String nome, String password) throws SQLException;
+    void registraUtente(String nome, char[] password) throws SQLException;
 }

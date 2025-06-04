@@ -19,7 +19,7 @@ public class Piattaforma {
 
     public void pubblicaClassifica() {};
 
-    public boolean registraUtente(String nome, String password, String ruolo) {
+    public boolean registraUtente(String nome, char[] password, String ruolo) {
 
         Utente utente = switch(ruolo.toLowerCase()) {
             case "partecipante" -> new Partecipante(nome, password);

@@ -19,12 +19,13 @@ public class RegistrazioneImplementazioneDAO implements RegistrazioneDAO {
         }
     }
 
-    public void registraUtente(String nome, String password) throws SQLException {
+    public void registraUtente(String nome, char[] password) throws SQLException {
         try {
-            PreparedStatement ps = con.prepareStatement("INSERT INTO UTENTE" + " (nome, password)" +
-                    "VALUES ('"+nome+"', '"+password+"');");
+            PreparedStatement ps = con.prepareStatement("INSERT INTO UTENTE (nome, pwd) VALUES ( ?, ?)");
+            ps.setString(1, nome);
+            ps.setString(2, new String(password));
+
             ps.executeUpdate();
-            con.close();
         } catch (SQLException e) {
             e.printStackTrace();
         }

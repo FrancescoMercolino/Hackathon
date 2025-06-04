@@ -10,34 +10,34 @@ import java.sql.SQLException;
 
 public class LoginImplementazioneDAO implements LoginDAO {
 
-    private Connection connection;
+    private Connection con;
 
     public LoginImplementazioneDAO() {
         try {
-            connection = ConnessioneDatabase.getInstance().connection;
+            con = ConnessioneDatabase.getInstance().connection;
         } catch (SQLException e) {
             e.printStackTrace();
         }
     }
 
-     public boolean eseguiLoginDB(String nome, String password) {
-        return true;
-     }
-        /* String sql = "SELECT 1 FROM Utente WHERE nome = ? AND pwd = ? ";
+     public boolean eseguiLoginDB(String nome, char[] password) throws SQLException {
+
+        boolean login = false;
         try {
-            PreparedStatement login = connection.prepareStatement(sql);
-            login.setString(1, nome);
-            login.setString(2, password);
+            PreparedStatement ps = con.prepareStatement("SELECT 1 FROM UTENTE WHERE nome = ? AND pwd = ? ");
 
-            ResultSet rs = login.executeQuery();
-            rs.next();
-            rs.close();
-            connection.close();
+            ps.setString(1, nome);
+            ps.setString(2, new String(password));
 
-        } catch (SQLException e) {
+            ResultSet rs = ps.executeQuery();
+
+            login = rs.next();
+
+        } catch(SQLException e){
             e.printStackTrace();
             return false;
-        }
-        return true;
-    } */
+         }
+
+        return login;
+     }
 }
