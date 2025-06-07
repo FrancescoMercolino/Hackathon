@@ -51,7 +51,7 @@ public class HomeHackathon {
                     if (log) {
                         JOptionPane.showMessageDialog(frame, "Login efettuato!");
                         SchermataPartecipante partecipante = new SchermataPartecipante(controller, frame);
-                        partecipante.frame.setVisible(true);
+                        partecipante.frameP.setVisible(true);
                         frame.setVisible(false);
                     } else {
                         JOptionPane.showMessageDialog(frame, "Errore Login!");
@@ -60,6 +60,14 @@ public class HomeHackathon {
                 } catch (SQLException ex) {
                     throw new RuntimeException(ex);
                 }
+            }
+        });
+        mostraTeamInGaraButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                SchermataClassifica classifica = new SchermataClassifica(controller, frame);
+                classifica.frame.setVisible(true);
+                frame.setVisible(false);
             }
         });
     }

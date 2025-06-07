@@ -45,6 +45,7 @@ public class Team {
     }
 
     public ArrayList<Utente> getMembri() {
+
         return membri;
     }
 

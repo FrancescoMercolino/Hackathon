@@ -40,4 +40,10 @@ public class ControllerHackathon {
     public void addTeam(Team t) {
        this.listaSquadre.add(t);
     }
+
+    public ArrayList<Team> getTeam() {
+
+        ArrayList<Team> teams = new ArrayList<>();
+
+    }
 }
