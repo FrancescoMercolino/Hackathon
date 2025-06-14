@@ -14,8 +14,8 @@ public class HomeHackathon {
     private JButton mostraTeamInGaraButton;
     private JButton loginButton;
     private JButton registrarsiButton;
-    private JTextField textField1;
-    private JPasswordField passwordField1;
+    private JTextField fieldNome;
+    private JPasswordField fieldPassword;
     private JLabel pswLabel;
     private JLabel nomeLabel;
     private final ControllerHackathon controller;
@@ -29,6 +29,7 @@ public class HomeHackathon {
         frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         frame.pack();
         frame.setVisible(true);
+        frame.setLocationRelativeTo(null);
     }
 
     public HomeHackathon() {
@@ -47,10 +48,10 @@ public class HomeHackathon {
             @Override
             public void actionPerformed(ActionEvent e) {
                 try {
-                    boolean log = controller.login(textField1.getText(), passwordField1.getPassword());
+                    boolean log = controller.login(fieldNome.getText(), fieldPassword.getPassword());
                     if (log) {
-                        JOptionPane.showMessageDialog(frame, "Login efettuato!");
-                        SchermataPartecipante partecipante = new SchermataPartecipante(controller, frame);
+                        JOptionPane.showMessageDialog(frame, "Login effettuato!");
+                        SchermataPartecipante partecipante = new SchermataPartecipante(controller, frame, fieldNome.getText());
                         partecipante.frameP.setVisible(true);
                         frame.setVisible(false);
                     } else {
@@ -71,4 +72,5 @@ public class HomeHackathon {
             }
         });
     }
+
 }

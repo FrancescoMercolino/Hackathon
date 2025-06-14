@@ -10,7 +10,7 @@ public class TableModelTeam extends AbstractTableModel {
 
     private ArrayList<Team> elencoTeam;
 
-    private String[] nomiColonne = {"Nome Team", "Utenti", "Punti"};
+    private String[] nomiColonne = {"Nome Team", "Utenti", "Punti", "Hackathon"};
 
     public void setData(ArrayList<Team> data) { this.elencoTeam = data; }
     @Override
@@ -33,7 +33,7 @@ public class TableModelTeam extends AbstractTableModel {
             case 0: return t.getNome();
             case 1: return t.getMembri();
             case 2: return t.getPunti();
-           // case 3: return t.getPosizione();
+            case 3: return t.getHackathon();
         }
 
         return null;

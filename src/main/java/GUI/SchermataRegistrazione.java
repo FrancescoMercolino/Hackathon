@@ -15,8 +15,11 @@ public class SchermataRegistrazione {
     private JComboBox ruoloComboBox;
     private JButton confermaButton;
     private JButton tornaIndietroButton;
-    private ControllerHackathon controller;
+    private JLabel labelNome;
+    private JLabel labelPassword;
+
     private Piattaforma piattaforma;
+
     public JFrame frame;
 
     public SchermataRegistrazione(ControllerHackathon controller, JFrame frameHome) {
@@ -25,6 +28,7 @@ public class SchermataRegistrazione {
         frame.setContentPane(panelRegistrazione);
         frame.pack();
         frame.setVisible(true);
+        frame.setLocationRelativeTo(null);
 
 
         confermaButton.addActionListener(new ActionListener() {
@@ -41,8 +45,15 @@ public class SchermataRegistrazione {
                 }
 
                 try {
-                    controller.registraUtenteDB(textNome.getText(), textPassword.getPassword());
-                    JOptionPane.showMessageDialog(panelRegistrazione, "Registrazione con successo!");
+                   boolean sentinella = controller.registraUtenteDB(textNome.getText(), textPassword.getPassword());
+
+                   if(!sentinella) {
+                       JOptionPane.showMessageDialog(panelRegistrazione, "Utente già esistente");
+                   } else {
+                       JOptionPane.showMessageDialog(panelRegistrazione, "Registrazione con successo!");
+                       frameHome.setVisible(true);
+                       frame.dispose();
+                   }
                 } catch (SQLException ex) {
                     throw new RuntimeException(ex);
                 }

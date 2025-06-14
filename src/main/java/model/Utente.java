@@ -1,7 +1,6 @@
 package Model;
 
-import DAO.LoginDAO;
-import implementazioneDAO.LoginImplementazioneDAO;
+import implementazioneDAO.UtenteImplementazioneDAO;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -27,7 +26,7 @@ public class Utente {
     };
 
     public void eseguiLogin(String nome, char[] password) throws SQLException {
-        LoginDAO utenteLogin = new LoginImplementazioneDAO();
+        DAO.UtenteDAO utenteLogin = new UtenteImplementazioneDAO();
         utenteLogin.eseguiLoginDB(nome, password);
     }
 

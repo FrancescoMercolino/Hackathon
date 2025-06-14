@@ -1,10 +1,9 @@
 package Controller;
 
-import DAO.LoginDAO;
-import DAO.RegistrazioneDAO;
+import DAO.PiattaformaDAO;
 import Model.*;
-import implementazioneDAO.LoginImplementazioneDAO;
-import implementazioneDAO.RegistrazioneImplementazioneDAO;
+import implementazioneDAO.PiattaformaImplementazioneDAO;
+import implementazioneDAO.UtenteImplementazioneDAO;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -24,18 +23,29 @@ public class ControllerHackathon {
 
 
     public boolean login(String nome, char[] password) throws SQLException {
-        LoginDAO utenteLogin = new LoginImplementazioneDAO();
+        DAO.UtenteDAO utenteLogin = new UtenteImplementazioneDAO();
         return utenteLogin.eseguiLoginDB(nome, password);
     }
 
-    public void registraUtenteDB(String nome, char[] password) throws SQLException {
+    public boolean registraUtenteDB(String nome, char[] password) throws SQLException {
         Utente u = new Utente(nome, password);
         u.registrazione(nome, password);
 
-        RegistrazioneDAO r = new RegistrazioneImplementazioneDAO();
-        r.registraUtente(nome, password);
+        DAO.UtenteDAO r = new UtenteImplementazioneDAO();
+        return r.registraUtente(nome, password);
+
     }
 
+    public boolean registraTeamDB(String nome, String team) throws SQLException {
+        DAO.PiattaformaDAO p = new PiattaformaImplementazioneDAO();
+        return p.registraTeam(nome, team);
+    }
+
+    public ArrayList<Team> getClassifica(String hackathon) throws SQLException {
+        DAO.PiattaformaDAO piattaformaDAO = new PiattaformaImplementazioneDAO();
+        listaSquadre = piattaformaDAO.getClassifica(hackathon);
+        return listaSquadre;
+    }
 
     public void addTeam(Team t) {
        this.listaSquadre.add(t);
@@ -44,6 +54,10 @@ public class ControllerHackathon {
     public ArrayList<Team> getTeam() {
 
         ArrayList<Team> teams = new ArrayList<>();
+
+
+
+        return teams;
 
     }
 }

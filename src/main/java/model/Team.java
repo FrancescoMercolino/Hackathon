@@ -6,37 +6,40 @@ public class Team {
 
     //attributi
     private String nome;
-    private ArrayList<Utente> membri;
-    private int dimensioneMassima;
+    private String membri;
+    private int punti;
+    private String hackathon;
     private Piattaforma piattaforma;
 
     //costruttore
-    public Team(String nome, int dimensioneMassima) {
+    public Team(String nome, String membri, String hackathon, int punti) {
         this.nome = nome;
-        this.dimensioneMassima = dimensioneMassima;
-        this.membri = new ArrayList<>();
+        this.membri = membri;
+        this.punti = punti;
+        this.hackathon = hackathon;
     }
 
     //metodi da implementare
     public void aggiornaProgressi() {};
 
-    //metodi
-    public void aggiungiMembro(Utente utente) {
-        if(this.membri.size() + 1 > dimensioneMassima) {
-            throw new IllegalArgumentException("Troppi Utenti nel team");
-        } else membri.add(utente);
-    };
+    public String getHackathon() {
+        return hackathon;
+    }
 
-    public void stampaMembri() {
+    //metodi
+    /* public void aggiungiMembro(Utente utente) {
+        membri.add(utente);
+    }; */
+
+    /* public void stampaMembri() {
         System.out.println("NOME TEAM " + nome);
         for (Utente utente : membri) {
             System.out.println("Membro: " + utente.getNome());
         };
-    }
+    } */
 
     public int getPunti() {
-       return  0;
-        // piattaforma.getPunti(this.nome);
+       return punti;
     }
 
     //getter
@@ -44,13 +47,8 @@ public class Team {
         return nome;
     }
 
-    public ArrayList<Utente> getMembri() {
-
+    public String getMembri() {
         return membri;
-    }
-
-    public int getDimensioneMassima() {
-        return 5;
     }
 
     //setter
@@ -58,8 +56,8 @@ public class Team {
         this.nome = Nome;
     }
 
-    public void setDimensioneMassima(int DimensioneMassima) {
-        this.dimensioneMassima = DimensioneMassima;
+    /* public Hackathon getHackathon() {
+        return hackathon;
     }
-
+    */
 }
