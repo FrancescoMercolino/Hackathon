@@ -1,6 +1,7 @@
 package GUI;
 
 import Controller.ControllerHackathon;
+import Model.Utente;
 
 import javax.swing.*;
 import java.awt.event.ActionEvent;
@@ -10,16 +11,16 @@ import java.sql.SQLException;
 public class HomeHackathon {
 
     private JPanel panel1;
-    private static JFrame frame;
-    private JButton mostraTeamInGaraButton;
     private JButton loginButton;
     private JButton registrarsiButton;
     private JTextField fieldNome;
     private JPasswordField fieldPassword;
     private JLabel pswLabel;
     private JLabel nomeLabel;
-    private final ControllerHackathon controller;
 
+
+    private final ControllerHackathon controller;
+    private static JFrame frame;
 
 
     public static void main(String[] args) {
@@ -28,6 +29,7 @@ public class HomeHackathon {
         frame.setContentPane(new HomeHackathon().panel1);
         frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         frame.pack();
+        frame.setSize(400, 300);
         frame.setVisible(true);
         frame.setLocationRelativeTo(null);
     }
@@ -51,7 +53,7 @@ public class HomeHackathon {
                     boolean log = controller.login(fieldNome.getText(), fieldPassword.getPassword());
                     if (log) {
                         JOptionPane.showMessageDialog(frame, "Login effettuato!");
-                        SchermataPartecipante partecipante = new SchermataPartecipante(controller, frame, fieldNome.getText());
+                        SchermataUtente partecipante = new SchermataUtente(controller, frame, fieldNome.getText());
                         partecipante.frameP.setVisible(true);
                         frame.setVisible(false);
                     } else {
@@ -63,14 +65,10 @@ public class HomeHackathon {
                 }
             }
         });
-        mostraTeamInGaraButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                SchermataClassifica classifica = new SchermataClassifica(controller, frame);
-                classifica.frame.setVisible(true);
-                frame.setVisible(false);
-            }
-        });
     }
+
+    /* Allora mi mancano
+organizzatore apre e chiude iscrizioni
+la classifica si aggiorna ad ogni voto */
 
 }

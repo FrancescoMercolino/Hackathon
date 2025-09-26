@@ -8,7 +8,7 @@ import java.util.ArrayList;
 
 public interface PiattaformaDAO {
 
-    public ArrayList<Team> getClassifica(String hackathon) throws SQLException;
-    public boolean registraTeam(String utente, String team) throws SQLException;
+    ArrayList<Team> getClassifica(String hackathon) throws SQLException;
+    boolean registraTeam(String utente, String team) throws SQLException;
 
 }

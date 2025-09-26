@@ -10,9 +10,12 @@ public class TableModelTeam extends AbstractTableModel {
 
     private ArrayList<Team> elencoTeam;
 
-    private String[] nomiColonne = {"Nome Team", "Utenti", "Punti", "Hackathon"};
+    private String[] nomiColonne = {"Nome Team", "Punti", "Hackathon"};
 
-    public void setData(ArrayList<Team> data) { this.elencoTeam = data; }
+    public void setData(ArrayList<Team> data) {
+        this.elencoTeam = data;
+        fireTableDataChanged();
+    }
     @Override
     public int getRowCount() {
         if(elencoTeam != null)
@@ -31,12 +34,10 @@ public class TableModelTeam extends AbstractTableModel {
 
         switch(columnIndex) {
             case 0: return t.getNome();
-            case 1: return t.getMembri();
-            case 2: return t.getPunti();
-            case 3: return t.getHackathon();
+            case 1: return t.getVoto();
+            case 2: return t.getHackathon();
+            default: return null;
         }
-
-        return null;
     }
 
     @Override

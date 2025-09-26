@@ -16,7 +16,7 @@ public class Utente {
         this.nome = nome;
         this.password = password;
 
-        utenti = new ArrayList<Utente>();
+        utenti = new ArrayList<>();
     }
 
     //metodi da implementare
@@ -38,5 +38,9 @@ public class Utente {
     //setter
     public void setNome(String nome) {
         this.nome = nome;
+    }
+
+    public ArrayList<Utente> getUtenti() {
+        return utenti;
     }
 }

@@ -1,11 +1,13 @@
 package GUI;
 
 import Controller.ControllerHackathon;
+import Model.Team;
 
 import javax.swing.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.sql.SQLException;
+import java.util.ArrayList;
 
 public class SchermataClassifica {
 
@@ -25,10 +27,14 @@ public class SchermataClassifica {
         this.frame.setVisible(true);
         this.frame.setLocationRelativeTo(null);
 
-
-        this.hackathonComboBox.addItem(" ");
-        this.hackathonComboBox.addItem("Hackathon Spring 2026");
-        this.hackathonComboBox.addItem("Hackathon Summer 2026");
+        try {
+            ArrayList<String> li = controller.riempiBox(hackathonComboBox);
+            for(String s : li){
+                hackathonComboBox.addItem(s);
+            }
+        }catch(SQLException e){
+            e.printStackTrace();
+        }
 
         TableModelTeam table = new TableModelTeam();
         table1.setModel(table);
@@ -36,11 +42,11 @@ public class SchermataClassifica {
         mostraClassificaButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                String hackathon = ((String) hackathonComboBox.getSelectedItem());
-                if(!hackathon.isEmpty()) {
-                    try {
-                        table.setData(controller.getClassifica(hackathon));
-                        table.fireTableDataChanged();
+                String hackathon = hackathonComboBox.getSelectedItem().toString();
+                if(!hackathon.isEmpty() && hackathon != null) {
+                    try {;
+                        ArrayList<Team> classifica = controller.getClassifica(hackathon);
+                        table.setData(classifica);
                     } catch (SQLException ex) {
                         throw new RuntimeException(ex);
                     }

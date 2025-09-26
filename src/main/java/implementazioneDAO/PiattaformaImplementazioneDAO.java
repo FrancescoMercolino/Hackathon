@@ -31,20 +31,21 @@ public class PiattaformaImplementazioneDAO implements PiattaformaDAO {
 
         ArrayList<Team> classifica = new ArrayList<>();
 
-
         try {
-                PreparedStatement ps = con.prepareStatement("select * from team WHERE hackathon = ? ORDER BY punti DESC ");
+                PreparedStatement ps = con.prepareStatement("select * from team WHERE hackathon = ? ORDER BY voto DESC ");
                 ps.setString(1, hackathon);
                 ResultSet rs = ps.executeQuery();
 
                 while (rs.next()) {
-                    String nome = rs.getString("nome");
-                    String membri = rs.getString("membr01");
-                    int punti = rs.getInt("punti");
+                    classifica.add(new Team(
+                            rs.getString("nome_team"),
+                            rs.getInt("voto"),
+                            rs.getString("hackathon")
+                    ));
+                }
 
-                    Team t = new Team(nome, membri, hackathon, punti);
-
-                    classifica.add(t);
+                for (Team team : classifica) {
+                    System.out.println(team);
                 }
 
         } catch(SQLException e){

@@ -12,7 +12,6 @@ public class SchermataRegistrazione {
     private JPanel panelRegistrazione;
     private JTextField textNome;
     private JPasswordField textPassword;
-    private JComboBox ruoloComboBox;
     private JButton confermaButton;
     private JButton tornaIndietroButton;
     private JLabel labelNome;
@@ -27,6 +26,7 @@ public class SchermataRegistrazione {
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setContentPane(panelRegistrazione);
         frame.pack();
+        frame.setSize(400, 300);
         frame.setVisible(true);
         frame.setLocationRelativeTo(null);
 

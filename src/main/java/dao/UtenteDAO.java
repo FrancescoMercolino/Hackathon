@@ -4,6 +4,9 @@ import java.sql.SQLException;
 
 public interface UtenteDAO {
 
-    public boolean eseguiLoginDB(String nome, char[] password) throws SQLException;
-    public boolean registraUtente(String nome, char[] password) throws SQLException;
+    boolean eseguiLoginDB(String nome, char[] password) throws SQLException;
+    boolean registraUtente(String nome, char[] password) throws SQLException;
+    boolean faParteTeam(String nome) throws SQLException;
+    String tipoUtente(String nome) throws SQLException;
+    boolean inserisciGiudice(String nome) throws SQLException;
 }
