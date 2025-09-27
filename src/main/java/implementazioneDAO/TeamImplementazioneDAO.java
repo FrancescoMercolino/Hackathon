@@ -65,7 +65,7 @@ public class TeamImplementazioneDAO implements TeamDAO {
     public void iscrivitiAllHackathon(String Team, String Hackathon) throws SQLException {
 
         try {
-            PreparedStatement iscriviti = con.prepareStatement("INSERT INTO team_hackathon (team_nome, hackathon_nome) VALUES (?, ?)");
+            PreparedStatement iscriviti = con.prepareStatement("INSERT INTO piattaforma(team_nome, hackathon_nome) VALUES (?, ?)");
             iscriviti.setString(1, Team);
             iscriviti.setString(2, Hackathon);
             iscriviti.executeUpdate();
@@ -80,7 +80,7 @@ public class TeamImplementazioneDAO implements TeamDAO {
         String iscrizione = null;
 
         try{
-            PreparedStatement recupera = con.prepareStatement("SELECT * FROM team_hackathon WHERE team_nome = (?)");
+            PreparedStatement recupera = con.prepareStatement("SELECT * FROM piattaforma WHERE team_nome = (?)");
             recupera.setString(1, Team);
             ResultSet rs = recupera.executeQuery();
 

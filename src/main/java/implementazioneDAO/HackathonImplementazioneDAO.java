@@ -41,7 +41,7 @@ public class HackathonImplementazioneDAO implements HackathonDAO {
     public boolean registraHackathon(String team, String hackathon) throws SQLException{
 
         try{
-            PreparedStatement ps = con.prepareStatement("ISERT INTO team_hackathon (team_nome, hackathon) VALUES (?, ?)");
+            PreparedStatement ps = con.prepareStatement("ISERT INTO piattaforma(team_nome, hackathon) VALUES (?, ?)");
             ps.setString(1, team);
             ps.setString(2, hackathon);
 
@@ -58,7 +58,7 @@ public class HackathonImplementazioneDAO implements HackathonDAO {
         ArrayList<String> iscritti = new ArrayList<>();
 
         try{
-            PreparedStatement ps = con.prepareStatement("SELECT team_nome FROM team_hackathon WHERE hackathon_nome = ? ");
+            PreparedStatement ps = con.prepareStatement("SELECT team_nome FROM piattaforma WHERE hackathon_nome = ? ");
             ps.setString(1, hackathon);
             ResultSet rs = ps.executeQuery();
 

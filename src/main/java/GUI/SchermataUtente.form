@@ -46,28 +46,6 @@
               <text value="LogOut"/>
             </properties>
           </component>
-          <component id="8836d" class="javax.swing.JButton" binding="selezionaGiudiceButton" default-binding="true">
-            <constraints>
-              <grid row="3" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
-            </constraints>
-            <properties>
-              <text value="Seleziona Giudice"/>
-            </properties>
-          </component>
-          <component id="fa1f5" class="javax.swing.JComboBox" binding="hackathonBox">
-            <constraints>
-              <grid row="4" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="2" anchor="8" fill="1" indent="0" use-parent-layout="false"/>
-            </constraints>
-            <properties/>
-          </component>
-          <component id="89839" class="javax.swing.JLabel" binding="gestisciHackathon">
-            <constraints>
-              <grid row="4" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
-            </constraints>
-            <properties>
-              <text value="Seleziona Hackathon da gestire"/>
-            </properties>
-          </component>
           <component id="3f5f2" class="javax.swing.JButton" binding="gestisciTeamButton" default-binding="true">
             <constraints>
               <grid row="1" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
@@ -115,6 +93,28 @@
             </constraints>
             <properties>
               <text value="Assegna voto"/>
+            </properties>
+          </component>
+          <component id="89839" class="javax.swing.JLabel" binding="gestisciHackathon">
+            <constraints>
+              <grid row="3" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
+            </constraints>
+            <properties>
+              <text value="Seleziona Hackathon da gestire"/>
+            </properties>
+          </component>
+          <component id="fa1f5" class="javax.swing.JComboBox" binding="hackathonBox">
+            <constraints>
+              <grid row="3" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="2" anchor="8" fill="1" indent="0" use-parent-layout="false"/>
+            </constraints>
+            <properties/>
+          </component>
+          <component id="8836d" class="javax.swing.JButton" binding="selezionaGiudiceButton" default-binding="true">
+            <constraints>
+              <grid row="4" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
+            </constraints>
+            <properties>
+              <text value="Seleziona Giudice"/>
             </properties>
           </component>
         </children>

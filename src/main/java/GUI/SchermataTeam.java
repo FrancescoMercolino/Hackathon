@@ -32,6 +32,7 @@ public class SchermataTeam {
         frameT.setLocationRelativeTo(null);
 
         String nomeTeam;
+        aggiornaBottoni(controller, username);
         try{
             nomeTeam = controller.getTeam(username);
         } catch (SQLException e) {
@@ -121,5 +122,10 @@ public class SchermataTeam {
 
             }
         });
+    }
+
+    public void aggiornaBottoni(ControllerHackathon controller, String username){
+
+
     }
 }

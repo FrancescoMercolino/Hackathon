@@ -68,7 +68,6 @@ public class HomeHackathon {
     }
 
     /* Allora mi mancano
-organizzatore apre e chiude iscrizioni
-la classifica si aggiorna ad ogni voto */
+organizzatore apre e chiude iscrizioni */
 
 }

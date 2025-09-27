@@ -44,10 +44,6 @@ public class PiattaformaImplementazioneDAO implements PiattaformaDAO {
                     ));
                 }
 
-                for (Team team : classifica) {
-                    System.out.println(team);
-                }
-
         } catch(SQLException e){
             e.printStackTrace();
 

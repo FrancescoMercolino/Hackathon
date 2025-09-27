@@ -191,11 +191,23 @@ public class SchermataUtente {
         if(privilegio.equalsIgnoreCase("organizzatore")) {
             selezionaGiudiceButton.setVisible(true);
             apriIscrizioniButton.setVisible(true);
+            gestisciTeamButton.setVisible(false);
+            creaTeamButton.setVisible(false);
+            valutaSoluzioniButton.setVisible(false);
+            assegnaVotoButton.setVisible(false);
         }
         if(privilegio.equalsIgnoreCase("giudice")) {
             pubblicaProblemaButton.setVisible(true);
             creaTeamButton.setVisible(false);
             gestisciTeamButton.setVisible(false);
+        }
+        if(privilegio.equalsIgnoreCase("partecipante")) {
+            pubblicaProblemaButton.setVisible(false);
+            valutaSoluzioniButton.setVisible(false);
+            assegnaVotoButton.setVisible(false);
+            gestisciHackathon.setVisible(false);
+            hackathonBox.setVisible(false);
+            apriIscrizioniButton.setVisible(false);
         }
     }
 }
