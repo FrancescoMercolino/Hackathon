@@ -21,13 +21,13 @@ public class ProblemaImplementazioneDAO implements ProblemaDAO {
     }
 
     @Override
-    public void pubblicaProblema(String problema, String Hackathon) throws SQLException {
+    public void pubblicaProblema(String giudice, String problema, String Hackathon) throws SQLException {
         try {
-            PreparedStatement ps = con.prepareStatement("insert into problema(descrizione_problema, hackathon) values(?, ?)");
+            PreparedStatement ps = con.prepareStatement("SELECT pubblica_problema(?, ?, ?)");
             ps.setString(1, problema);
             ps.setString(2, Hackathon);
-            ps.executeUpdate();
-
+            ps.setString(3, giudice);
+            ps.execute();
         } catch (SQLException e) {
             e.printStackTrace();
             throw e;

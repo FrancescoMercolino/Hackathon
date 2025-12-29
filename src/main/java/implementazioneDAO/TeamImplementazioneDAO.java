@@ -2,11 +2,14 @@ package implementazioneDAO;
 
 import DAO.TeamDAO;
 import Database.ConnessioneDatabase;
+import Model.Team;
+import Model.Utente;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
 
 public class TeamImplementazioneDAO implements TeamDAO {
 
@@ -23,7 +26,7 @@ public class TeamImplementazioneDAO implements TeamDAO {
    public boolean aggiungiAlTeam(String nome, String Team) throws SQLException{
         try{
             //controlla l'utente non fa già parte di un team
-            PreparedStatement controllo = con.prepareStatement("SELECT COUNT(*) FROM team_utente WHERE LOWER(utente_nome) = LOWER(?)");
+            PreparedStatement controllo = con.prepareStatement("SELECT COUNT(*) FROM partecipante WHERE LOWER(nome) = LOWER(?) AND nome_team IS NOT NULL");
             controllo.setString(1, nome);
             ResultSet rs = controllo.executeQuery();
 
@@ -34,7 +37,7 @@ public class TeamImplementazioneDAO implements TeamDAO {
                 }
             }
 
-            PreparedStatement aggiungi = con.prepareStatement("insert into team_utente (team_nome, utente_nome) values (?, ?)");
+            PreparedStatement aggiungi = con.prepareStatement("UPDATE partecipante SET nome_team = ? where nome = ?");
             aggiungi.setString(1, Team);
             aggiungi.setString(2, nome);
             aggiungi.executeUpdate();
@@ -46,15 +49,15 @@ public class TeamImplementazioneDAO implements TeamDAO {
         return true;
     }
 
-    public String leggiNomeTeam(String username) throws SQLException {
+    public String getTeamDB(String username) throws SQLException {
         String nome = null;
         try{
-            PreparedStatement leggiTeam = con.prepareStatement("SELECT team_nome FROM team_utente WHERE utente_nome = (?)");
+            PreparedStatement leggiTeam = con.prepareStatement("SELECT nome_team FROM partecipante WHERE nome = (?)");
             leggiTeam.setString(1, username);
             ResultSet rs = leggiTeam.executeQuery();
 
             if (rs.next()) {
-                nome = rs.getString("team_nome");
+                nome = rs.getString("nome_team");
             }
         }catch(SQLException e) {
             e.printStackTrace();
@@ -62,12 +65,35 @@ public class TeamImplementazioneDAO implements TeamDAO {
         return nome;
     }
 
+    public ArrayList<Utente> getMembriTeamDB(String team) throws SQLException{
+        ArrayList<Utente> membri = new ArrayList<>();
+
+        try{
+            PreparedStatement recupera = con.prepareStatement("SELECT * FROM partecipante WHERE nome_team = (?)");
+            recupera.setString(1, team);
+            ResultSet rs = recupera.executeQuery();
+
+            while (rs.next()) {
+                Utente utente = new Utente(
+                        rs.getString("nome"),
+                        null);
+                membri.add(utente);
+
+            }
+        }catch(SQLException e) {
+            e.printStackTrace();
+            throw e;
+        }
+
+        return membri;
+    }
+
     public void iscrivitiAllHackathon(String Team, String Hackathon) throws SQLException {
 
         try {
-            PreparedStatement iscriviti = con.prepareStatement("INSERT INTO piattaforma(team_nome, hackathon_nome) VALUES (?, ?)");
-            iscriviti.setString(1, Team);
-            iscriviti.setString(2, Hackathon);
+            PreparedStatement iscriviti = con.prepareStatement("UPDATE team SET hackathon = ? WHERE LOWER(nome_team) = LOWER(?)");
+            iscriviti.setString(1, Hackathon);
+            iscriviti.setString(2, Team);
             iscriviti.executeUpdate();
 
         }catch(SQLException e) {
@@ -80,12 +106,12 @@ public class TeamImplementazioneDAO implements TeamDAO {
         String iscrizione = null;
 
         try{
-            PreparedStatement recupera = con.prepareStatement("SELECT * FROM piattaforma WHERE team_nome = (?)");
+            PreparedStatement recupera = con.prepareStatement("SELECT * FROM team WHERE nome_team = (?)");
             recupera.setString(1, Team);
             ResultSet rs = recupera.executeQuery();
 
             if (rs.next()) {
-                iscrizione = rs.getString("hackathon_nome");
+                iscrizione = rs.getString("hackathon");
             }
         }catch(SQLException e) {
             e.printStackTrace();
@@ -93,19 +119,5 @@ public class TeamImplementazioneDAO implements TeamDAO {
         }
 
         return iscrizione;
-    }
-
-    public void votaSoluzione(String nomeTeam, int voto) throws SQLException {
-
-        try{
-            PreparedStatement vota = con.prepareStatement("UPDATE team SET voto = ? WHERE nome_team = (?)");
-            vota.setInt(1, voto);
-            vota.setString(2, nomeTeam);
-            vota.executeUpdate();
-
-        }catch (SQLException e) {
-            e.printStackTrace();
-            throw e;
-        }
     }
 }

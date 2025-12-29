@@ -24,7 +24,7 @@ public class UtenteImplementazioneDAO implements DAO.UtenteDAO {
     public boolean registraUtente(String nome, char[] password) throws SQLException {
         //controllo che nome non sia già inserito
         try {
-            PreparedStatement controllo = con.prepareStatement("SELECT COUNT(*) FROM UTENTE WHERE LOWER(nome) = LOWER(?)");
+            PreparedStatement controllo = con.prepareStatement("SELECT COUNT(*) FROM partecipante WHERE LOWER(nome) = LOWER(?)");
             controllo.setString(1, nome);
             ResultSet rs = controllo.executeQuery();
 
@@ -36,7 +36,7 @@ public class UtenteImplementazioneDAO implements DAO.UtenteDAO {
             }
 
             //Non esiste già in database, procedi ad inserire
-            PreparedStatement ps = con.prepareStatement("INSERT INTO UTENTE (nome, pwd) VALUES ( ?, ?)");
+            PreparedStatement ps = con.prepareStatement("INSERT INTO partecipante (nome, pwd) VALUES ( ?, ?)");
             ps.setString(1, nome);
             ps.setString(2, new String(password));
 
@@ -51,9 +51,9 @@ public class UtenteImplementazioneDAO implements DAO.UtenteDAO {
     @Override
      public boolean eseguiLoginDB(String nome, char[] password) throws SQLException {
 
-        boolean login = false;
+        boolean login;
         try {
-            PreparedStatement ps = con.prepareStatement("SELECT 1 FROM UTENTE WHERE nome = ? AND pwd = ? ");
+            PreparedStatement ps = con.prepareStatement("SELECT 1 FROM login WHERE nome = ? AND pwd = ? ");
 
             ps.setString(1, nome);
             ps.setString(2, new String(password));
@@ -74,12 +74,13 @@ public class UtenteImplementazioneDAO implements DAO.UtenteDAO {
         boolean team = false;
 
         try {
-            PreparedStatement ps = con.prepareStatement("SELECT 1 FROM team_utente WHERE utente_nome = ?");
+            PreparedStatement ps = con.prepareStatement("SELECT nome_team FROM partecipante WHERE nome = ? AND nome_team IS NOT NULL");
             ps.setString(1, nome);
-
             ResultSet rs = ps.executeQuery();
 
-            team = rs.next();
+            if (rs.next()) {
+                team = true;
+            }
 
         } catch (SQLException e) {
             e.printStackTrace();
@@ -88,35 +89,85 @@ public class UtenteImplementazioneDAO implements DAO.UtenteDAO {
      }
 
      public String tipoUtente(String nome) throws SQLException {
-        try {
-            PreparedStatement ps = con.prepareStatement("SELECT privilegio FROM privilegi_utente WHERE utente = ?");
-            ps.setString(1, nome);
 
-            ResultSet rs = ps.executeQuery();
-            if (rs.next()) {
-                return rs.getString("privilegio");
+        String[] tabella = {"organizzatore", "giudice", "partecipante"};
+
+        for(String tabella1 : tabella) {
+            try {
+                PreparedStatement privilegio = con.prepareStatement("Select 1 FROM " + tabella1 + " WHERE LOWER(nome) = LOWER(?)");
+                privilegio.setString(1, nome);
+                ResultSet rs = privilegio.executeQuery();
+                if(rs.next()) {
+                    return tabella1;
+                }
+            }catch(SQLException e){
+                e.printStackTrace();
+                throw e;
             }
-
-
-        }catch (SQLException e) {
-            e.printStackTrace();
         }
+
         return null;
      }
 
-    public boolean inserisciGiudice(String nome) throws SQLException{
+    public boolean inserisciGiudice(String nome, String organizzatore) throws SQLException{
+
         try {
-            PreparedStatement ps = con.prepareStatement("INSERT INTO utente_giudice (nome_giudice) VALUES (?)");
+            PreparedStatement getinfo = con.prepareStatement("SELECT pwd FROM partecipante WHERE LOWER(nome) = LOWER(?)");
+            getinfo.setString(1, nome);
+            ResultSet rs = getinfo.executeQuery();
+            String password;
+
+            if(rs.next()) {
+                password = rs.getString(1);
+            } else {
+
+                return false;
+            }
+
+            PreparedStatement ps = con.prepareStatement("INSERT INTO giudice VALUES (?, ?, ?)");
             ps.setString(1, nome);
+            ps.setString(2, password);
+            ps.setString(3, organizzatore);
             ps.executeUpdate();
 
 
         }catch(SQLException e) {
             e.printStackTrace();
-            return false;
+            throw e;
         }
 
         return true;
+    }
+
+    public void votaSoluzione(String giudice, String nomeTeam, int voto) throws SQLException {
+
+        try{
+            PreparedStatement vota = con.prepareStatement("INSERT INTO voto VALUES (?, ?, ?)");
+            vota.setString(1, giudice);
+            vota.setString(2, nomeTeam);
+            vota.setInt(3, voto);
+            vota.executeUpdate();
+
+        }catch (SQLException e) {
+            e.printStackTrace();
+            throw e;
+        }
+    }
+
+    public boolean utenteEsiste(String nome) throws SQLException{
+
+        try{
+            PreparedStatement controllo = con.prepareStatement("SELECT 1 FROM partecipante WHERE nome = ? ");
+            controllo.setString(1, nome);
+            ResultSet rs = controllo.executeQuery();
+            if(rs.next()) {
+                return true;
+            }
+        }catch(SQLException ex) {
+            ex.printStackTrace();
+            throw ex;
+        }
+        return false;
     }
 
 }

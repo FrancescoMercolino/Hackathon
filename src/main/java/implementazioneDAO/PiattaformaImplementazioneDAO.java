@@ -1,5 +1,6 @@
 package implementazioneDAO;
 
+import DAO.HackathonDAO;
 import DAO.PiattaformaDAO;
 import Database.ConnessioneDatabase;
 import Model.Hackathon;
@@ -17,6 +18,7 @@ public class PiattaformaImplementazioneDAO implements PiattaformaDAO {
 
 
     private Connection con;
+    private HackathonDAO hackathonDAO;
 
     public PiattaformaImplementazioneDAO() {
         try {
@@ -24,6 +26,7 @@ public class PiattaformaImplementazioneDAO implements PiattaformaDAO {
         } catch (SQLException e) {
             e.printStackTrace();
         }
+        hackathonDAO = new HackathonImplementazioneDAO();
     }
 
     @Override
@@ -32,15 +35,17 @@ public class PiattaformaImplementazioneDAO implements PiattaformaDAO {
         ArrayList<Team> classifica = new ArrayList<>();
 
         try {
-                PreparedStatement ps = con.prepareStatement("select * from team WHERE hackathon = ? ORDER BY voto DESC ");
+                PreparedStatement ps = con.prepareStatement("select * from classifica WHERE hackathon = ? ORDER BY punti DESC ");
                 ps.setString(1, hackathon);
                 ResultSet rs = ps.executeQuery();
 
+
                 while (rs.next()) {
+                    Hackathon hack = hackathonDAO.getHackathonFromDB(rs.getString("hackathon"));
                     classifica.add(new Team(
                             rs.getString("nome_team"),
-                            rs.getInt("voto"),
-                            rs.getString("hackathon")
+                            rs.getInt("punti"),
+                            hack
                     ));
                 }
 
@@ -55,14 +60,15 @@ public class PiattaformaImplementazioneDAO implements PiattaformaDAO {
     @Override
     public boolean registraTeam(String utente, String team) throws SQLException {
         try {
-            PreparedStatement controllo = con.prepareStatement("Select COUNT(*) FROM team_utente WHERE LOWER(team_nome) = LOWER(?)");
+            PreparedStatement controllo = con.prepareStatement("Select COUNT(*) FROM partecipante WHERE LOWER(nome_team) = LOWER(?) AND LOWER(nome) = LOWER(?)");
             controllo.setString(1, team);
+            controllo.setString(2, utente);
             ResultSet rs = controllo.executeQuery();
             if (rs.next() && rs.getInt(1) > 0) {
                 return false;
             }
 
-            PreparedStatement ps = con.prepareStatement("INSERT INTO team_utente (team_nome, utente_nome) VALUES ( ?, ?)");
+            PreparedStatement ps = con.prepareStatement("UPDATE partecipante SET nome_team = ? WHERE LOWER(nome) = LOWER(?)");
             ps.setString(1, team);
             ps.setString(2, utente);
 

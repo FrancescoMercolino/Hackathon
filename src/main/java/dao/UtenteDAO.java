@@ -8,5 +8,7 @@ public interface UtenteDAO {
     boolean registraUtente(String nome, char[] password) throws SQLException;
     boolean faParteTeam(String nome) throws SQLException;
     String tipoUtente(String nome) throws SQLException;
-    boolean inserisciGiudice(String nome) throws SQLException;
+    boolean utenteEsiste(String nome) throws SQLException;
+    boolean inserisciGiudice(String nome, String organizzatore) throws SQLException;
+    void votaSoluzione(String giudice, String nomeTean, int voto) throws SQLException;
 }

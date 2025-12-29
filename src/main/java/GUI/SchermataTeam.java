@@ -1,6 +1,8 @@
 package GUI;
 
 import Controller.ControllerHackathon;
+import Model.Team;
+import Model.Utente;
 
 import javax.swing.*;
 import java.awt.*;
@@ -22,6 +24,8 @@ public class SchermataTeam {
     private JButton aggiungiPartecipanteButton;
     private JButton leggiProblemaButton;
     private JLabel hackathonCorrenteLabel;
+    private JLabel infoLabel;
+    private String nomeTeam;
     public JFrame frameT;
 
     public SchermataTeam(ControllerHackathon controller, JFrame frameUtente, String username) throws SQLException {
@@ -31,15 +35,18 @@ public class SchermataTeam {
         frameT.setVisible(true);
         frameT.setLocationRelativeTo(null);
 
-        String nomeTeam;
-        aggiornaBottoni(controller, username);
         try{
             nomeTeam = controller.getTeam(username);
+
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
 
         hackathonCorrenteLabel.setText(controller.recuperaIscrizione(nomeTeam));
+        String statoHackathon = controller.getStato(hackathonCorrenteLabel.getText());
+
+        aggiornaBottoni(controller, statoHackathon);
+
         try {
             ArrayList<String> li = controller.riempiBox(HackathonBox);
             for(String s : li){
@@ -49,7 +56,15 @@ public class SchermataTeam {
             e.printStackTrace();
         }
 
-        labelNomeTeam.setText(controller.getTeam(username));
+        labelNomeTeam.setText(nomeTeam);
+        ArrayList<Utente> membri = controller.getMembri(nomeTeam);
+        StringBuilder utentiBuilder = new StringBuilder();
+        for(Utente u : membri){
+            String nome = u.getNome();
+            utentiBuilder.append(nome +" ");
+        }
+        String utenti = utentiBuilder.toString();
+        labelUtenti.setText(utenti);
 
         tornaIndietroButton.addActionListener(new ActionListener() {
             @Override
@@ -65,11 +80,18 @@ public class SchermataTeam {
             @Override
             public void actionPerformed(ActionEvent e) {
                 String scelta = JOptionPane.showInputDialog(frameUtente, "Inserisci un Partecipante");
-                if(scelta.isBlank()) {
+                //controlla che la scelta sia valida
+                if(scelta.isBlank() || scelta.isEmpty()) {
                     JOptionPane.showMessageDialog(frameUtente, "Nome non valido");
                 } else {
                     try {
-                        controller.aggiungiAlTeam(scelta, nomeTeam);
+                        //controlla che l'utente scelto esiste tra i registrati
+                        boolean sentinella = controller.utenteEsiste(scelta);
+                        if(sentinella && !controller.faParteTeam(scelta)) {
+                            controller.aggiungiAlTeam(scelta, nomeTeam, username);
+                        } else {
+                            JOptionPane.showMessageDialog(frameUtente, "Impossibile inserire l'utente " + scelta);
+                        }
                     } catch (SQLException ex) {
                         ex.printStackTrace();
                     }
@@ -81,8 +103,21 @@ public class SchermataTeam {
             public void actionPerformed(ActionEvent e) {
                 try{
                     String hackathon = HackathonBox.getSelectedItem().toString();
-                    controller.iscriviHackathon(nomeTeam, hackathon);
-                    JOptionPane.showMessageDialog(frameUtente, "Iscrizione effettuata per: " + HackathonBox.getSelectedItem());
+                    String stato = controller.getStato(hackathon);
+                    System.out.println(stato);
+                    if(!stato.equals("aperto")){
+                        JOptionPane.showMessageDialog(frameUtente, "Impossibile iscriversi ad: " + hackathon);
+                        return;
+                    } else if (controller.teamIscrittiHackathon(hackathon) >= controller.maxIscrittiHackathon(hackathon) ) {
+                        JOptionPane.showMessageDialog(frameUtente, "Iscrizioni chiuse per " + hackathon + " numero massimo partecipanti raggiunto.");
+                        return;
+                    }else {
+                        controller.iscriviHackathon(nomeTeam, hackathon);
+                        JOptionPane.showMessageDialog(frameUtente, "Iscrizione effettuata per: " + HackathonBox.getSelectedItem());
+                    }
+                    aggiornaBottoni(controller, statoHackathon);
+                    hackathonCorrenteLabel.setText(controller.recuperaIscrizione(nomeTeam));
+                    frameT.pack();
 
                 } catch (Exception ex) {
                     ex.printStackTrace();
@@ -114,18 +149,31 @@ public class SchermataTeam {
             @Override
             public void actionPerformed(ActionEvent e) {
                 try {
-                    String hackathon = controller.recuperaIscrizione(nomeTeam);
-                    JOptionPane.showMessageDialog(null, controller.recuperaProblema(hackathon));
-                }catch(SQLException ex) {
-                    ex.printStackTrace();
+                    if(statoHackathon.equals("aperte")) {
+                        JOptionPane.showMessageDialog(frameUtente, "Hackathon non ancora iniziato");
+                    }else {
+                        String hackathon = controller.recuperaIscrizione(nomeTeam);
+                        JOptionPane.showMessageDialog(null, controller.recuperaProblema(hackathon));
+                    }
+                } catch (SQLException ex) {
+                    throw new RuntimeException(ex);
                 }
-
             }
         });
     }
 
-    public void aggiornaBottoni(ControllerHackathon controller, String username){
+    public void aggiornaBottoni(ControllerHackathon controller, String statoHackathon) throws SQLException {
 
+        String iscrizione = controller.recuperaIscrizione(nomeTeam);
 
+        if(iscrizione != null){
+            labelSeleziona.setVisible(false);
+            HackathonBox.setVisible(false);
+            selezionaHackathonButton.setVisible(false);
+        }
+
+        if(statoHackathon.equals("chiuse")) {
+            aggiungiPartecipanteButton.setVisible(false);
+        }
     }
 }

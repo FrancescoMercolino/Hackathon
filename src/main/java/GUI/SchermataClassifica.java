@@ -44,7 +44,7 @@ public class SchermataClassifica {
             public void actionPerformed(ActionEvent e) {
                 String hackathon = hackathonComboBox.getSelectedItem().toString();
                 if(!hackathon.isEmpty() && hackathon != null) {
-                    try {;
+                    try {
                         ArrayList<Team> classifica = controller.getClassifica(hackathon);
                         table.setData(classifica);
                     } catch (SQLException ex) {

@@ -35,7 +35,7 @@ public class TableModelTeam extends AbstractTableModel {
         switch(columnIndex) {
             case 0: return t.getNome();
             case 1: return t.getVoto();
-            case 2: return t.getHackathon();
+            case 2: return t.getHackathon().getTitolo();
             default: return null;
         }
     }

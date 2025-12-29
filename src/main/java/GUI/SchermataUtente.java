@@ -6,7 +6,10 @@ import javax.swing.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.sql.SQLException;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 
 public class SchermataUtente {
     private JPanel panelPartecipante;
@@ -22,21 +25,24 @@ public class SchermataUtente {
     private JLabel gestisciHackathon;
     private JButton valutaSoluzioniButton;
     private JButton assegnaVotoButton;
+    private JButton organizzaHackathonButton;
+    private JButton terminaCompetizioneButton;
+    private JButton chiudiIscrizioniButton;
     public JFrame frameP;
 
     public SchermataUtente(ControllerHackathon controller, JFrame frameHome, String username) throws SQLException {
         frameP = new JFrame("Schermata Partecipante");
-        frameP.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frameP.setContentPane(panelPartecipante);
-        frameP.pack();
-        frameP.setVisible(true);
-        frameP.setLocationRelativeTo(null);
+        frameP.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
         String tipo = controller.tipoUtente(username);
-        selezionaGiudiceButton.setVisible(false);
-        pubblicaProblemaButton.setVisible(false);
-        apriIscrizioniButton.setVisible(false);
-        aggiornaBottoni(controller, username, tipo);
+        aggiornaBottoni(controller, username, tipo); //choose which button will be visible
+
+        frameP.setMinimumSize(frameP.getSize());
+        frameP.pack();
+        frameP.setLocationRelativeTo(null);
+        frameP.setVisible(true);
+
 
         labelUtente.setText("Benvenuto: " + username);
 
@@ -55,7 +61,6 @@ public class SchermataUtente {
                 String s = JOptionPane.showInputDialog(frameP, "Inserisci nome del team");
                 if(s.isBlank()) {
                     JOptionPane.showMessageDialog(frameP, "Inserisci nome del team");
-
                 } else {
                     try {
                        boolean sentinella = controller.registraTeamDB(username, s);
@@ -64,12 +69,14 @@ public class SchermataUtente {
                            JOptionPane.showMessageDialog(frameP, "Errore registrazione!");
                        } else {
                            JOptionPane.showMessageDialog(frameP, "Registrazione con successo!");
+                           frameP.pack();
                        }
                     } catch (SQLException ex) {
                         throw new RuntimeException(ex);
                     }
                 }
             }
+
         });
 
         gestisciTeamButton.addActionListener(new ActionListener() {
@@ -105,23 +112,40 @@ public class SchermataUtente {
             @Override
             public void actionPerformed(ActionEvent e) {
                     String scelta = JOptionPane.showInputDialog(frameP, "Inserisci nome utente da promuovere come giudice");
+
                     if(scelta.isBlank()) {
                         JOptionPane.showMessageDialog(frameP, "Nome non valido");
-                    } else {
-                        try {
-                            controller.inserisciGiudice(scelta);
-                        } catch (SQLException ex) {
-                            ex.printStackTrace();
-                                }
-                            }
+                        return;
                     }
+
+                    try {
+
+                        boolean inserimento = controller.inserisciGiudice(scelta, username);
+
+                        if(inserimento) {
+                            JOptionPane.showMessageDialog(frameP, "Giudice " +scelta + " inserito con successo!");
+                        }else {
+                            JOptionPane.showMessageDialog(frameP, "Il giudice " +scelta + " non esiste!");
+                        }
+                    }catch(SQLException ex) {
+                        JOptionPane.showMessageDialog(frameP, ex);
+                        ex.printStackTrace();
+                    }
+            }
         });
+
         apriIscrizioniButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
+                try{
+                    controller.apriIscrizioniHackathon(hackathonBox.getSelectedItem().toString());
+                }catch (SQLException ex){
+                    JOptionPane.showMessageDialog(frameP, ex.getMessage());
+                }
 
             }
         });
+
         pubblicaProblemaButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -129,7 +153,7 @@ public class SchermataUtente {
                 JOptionPane.showConfirmDialog(null, textArea, "Problema", JOptionPane.OK_CANCEL_OPTION);
                 String descrizione = textArea.getText();
                 try {
-                    controller.pubblicaProblema(descrizione, hackathonBox.getSelectedItem().toString());
+                    controller.pubblicaProblema(username, descrizione, hackathonBox.getSelectedItem().toString());
                 }catch(SQLException ex) {
                     JOptionPane.showMessageDialog(frameP, ex.getMessage());
                     ex.printStackTrace();
@@ -173,12 +197,57 @@ public class SchermataUtente {
                     int seleziona = JOptionPane.showOptionDialog(null, "Seleziona team:", "Boh", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE, null, teamArray, teamArray[0]);
 
                     if(seleziona >= 0) {
-                        int voto = Integer.parseInt(JOptionPane.showInputDialog(null, "Inserisci voto al tem:", "Votare", JOptionPane.PLAIN_MESSAGE));
-                        controller.votaSoluzione(teamArray[seleziona], voto);
+                        int voto = Integer.parseInt(JOptionPane.showInputDialog(null, "Inserisci voto al team:", "Votare", JOptionPane.PLAIN_MESSAGE));
+                        controller.votaSoluzione(username, teamArray[seleziona], voto);
                     }
 
                 } catch (SQLException ex) {
                     JOptionPane.showMessageDialog(frameP, "Il voto è compreso tra 0 e 10. Riprova.");
+                } catch (ArrayIndexOutOfBoundsException ex) {
+                    JOptionPane.showMessageDialog(frameP, "Non ci sono team registrati");
+                }
+            }
+        });
+        organizzaHackathonButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                String titolo = JOptionPane.showInputDialog(frameP, "Inserisci Nome hackathon");
+                String dataInizio = JOptionPane.showInputDialog(frameP, "Inserisci Data Inizio (formato yyyy-MM-dd)");
+                String dataFine = JOptionPane.showInputDialog(frameP, "Inserisci Data Fine (formato yyyy-MM-dd)");
+                String sede = JOptionPane.showInputDialog(frameP, "Inserisci Sede");
+                int max = Integer.parseInt(JOptionPane.showInputDialog(frameP, "Inserisci numero massimo partecipanti"));
+
+               try{
+                   SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
+                   Date dataI = formatter.parse(dataInizio);
+                   Date dataF = formatter.parse(dataFine);
+
+                   controller.inserisciHackathon(titolo, sede, dataI, dataF, max, "chiuse");
+               }catch(SQLException ex){
+                   JOptionPane.showMessageDialog(frameP, ex.getMessage());
+                   ex.printStackTrace();
+               }catch (ParseException px){
+                   JOptionPane.showMessageDialog(frameP, px.getMessage());
+               }
+            }
+        });
+        terminaCompetizioneButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                try{
+                    controller.terminaCompetizione(hackathonBox.getSelectedItem().toString());
+                }catch(SQLException ex){
+                    JOptionPane.showMessageDialog(frameP, ex.getMessage());
+                }
+            }
+        });
+        chiudiIscrizioniButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                try{
+                    controller.chiudiIscrizioniHackathon(hackathonBox.getSelectedItem().toString());
+                }catch(SQLException ex){
+                    JOptionPane.showMessageDialog(frameP, ex.getMessage());
                 }
             }
         });
@@ -188,6 +257,7 @@ public class SchermataUtente {
         boolean teamEsiste = controller.faParteTeam(username);
         creaTeamButton.setEnabled(!teamEsiste);
         gestisciTeamButton.setVisible(teamEsiste);
+
         if(privilegio.equalsIgnoreCase("organizzatore")) {
             selezionaGiudiceButton.setVisible(true);
             apriIscrizioniButton.setVisible(true);
@@ -195,19 +265,31 @@ public class SchermataUtente {
             creaTeamButton.setVisible(false);
             valutaSoluzioniButton.setVisible(false);
             assegnaVotoButton.setVisible(false);
+            pubblicaProblemaButton.setVisible(false);
+
         }
         if(privilegio.equalsIgnoreCase("giudice")) {
-            pubblicaProblemaButton.setVisible(true);
             creaTeamButton.setVisible(false);
             gestisciTeamButton.setVisible(false);
+            apriIscrizioniButton.setVisible(false);
+            selezionaGiudiceButton.setVisible(false);
+            apriIscrizioniButton.setVisible(false);
+            terminaCompetizioneButton.setVisible(false);
+            organizzaHackathonButton.setVisible(false);
+            chiudiIscrizioniButton.setVisible(false);
         }
         if(privilegio.equalsIgnoreCase("partecipante")) {
+            selezionaGiudiceButton.setVisible(false);
             pubblicaProblemaButton.setVisible(false);
             valutaSoluzioniButton.setVisible(false);
             assegnaVotoButton.setVisible(false);
             gestisciHackathon.setVisible(false);
             hackathonBox.setVisible(false);
             apriIscrizioniButton.setVisible(false);
+            apriIscrizioniButton.setVisible(false);
+            terminaCompetizioneButton.setVisible(false);
+            organizzaHackathonButton.setVisible(false);
+            chiudiIscrizioniButton.setVisible(false);
         }
     }
 }
