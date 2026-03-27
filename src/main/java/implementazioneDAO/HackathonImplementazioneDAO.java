@@ -2,7 +2,7 @@ package implementazioneDAO;
 
 import DAO.HackathonDAO;
 import Database.ConnessioneDatabase;
-import Model.Hackathon;
+import model.Hackathon;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -41,20 +41,22 @@ public class HackathonImplementazioneDAO implements HackathonDAO {
         return hackathon;
     }
 
-    public boolean registraHackathon(String team, String hackathon) throws SQLException{
+    public ArrayList<String> getAllHackathonAperti() throws SQLException{
+        ArrayList<String> hackathon = new ArrayList<>();
 
         try{
-            PreparedStatement ps = con.prepareStatement("ISERT INTO piattaforma(team_nome, hackathon) VALUES (?, ?)");
-            ps.setString(1, team);
-            ps.setString(2, hackathon);
+            PreparedStatement ps = con.prepareStatement("select titolo from Hackathon WHERE stato = 'aperto'");
+            ResultSet rs = ps.executeQuery();
 
-            ps.executeUpdate();
+            while(rs.next()){
+                hackathon.add(rs.getString("titolo"));
+            }
 
-        } catch (SQLException e) {
+        } catch(SQLException e) {
             e.printStackTrace();
-            return false;
+            throw e;
         }
-        return true;
+        return hackathon;
     }
 
     public ArrayList<String> recuperaIscrizioniHackathon(String hackathon) throws SQLException{
@@ -115,14 +117,18 @@ public class HackathonImplementazioneDAO implements HackathonDAO {
 
     public void inserisciNuovoHackathon(String titolo, String sede, Date dataInizio, Date dataFine, int partecipanti, String stato) throws SQLException{
 
+        //ipotizzo che un team deve essere composto almeno da due persone
+        int numeroMaxTeam = partecipanti / 2;
+
         try{
-            PreparedStatement inserisci = con.prepareStatement("INSERT INTO Hackathon VALUES (?, ?, ?, ?, ?, ?)");
+            PreparedStatement inserisci = con.prepareStatement("INSERT INTO Hackathon VALUES (?, ?, ?, ?, ?, ?, ?)");
             inserisci.setString(1, titolo);
             inserisci.setString(2, sede);
             inserisci.setDate(3, new java.sql.Date(dataInizio.getTime()));
             inserisci.setDate(4, new java.sql.Date(dataFine.getTime()));
             inserisci.setInt(5, partecipanti);
             inserisci.setString(6, stato);
+            inserisci.setInt(7, numeroMaxTeam);
             inserisci.executeUpdate();
 
 

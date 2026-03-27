@@ -1,5 +1,5 @@
 package DAO;
-import Model.Hackathon;
+import model.Hackathon;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -8,6 +8,7 @@ import java.util.Date;
 public interface HackathonDAO {
 
     ArrayList<String> getAllHackathon() throws SQLException;
+    ArrayList<String> getAllHackathonAperti() throws SQLException;
     Hackathon getHackathonFromDB(String nomeHackathon) throws SQLException;
     ArrayList<String> recuperaIscrizioniHackathon(String hackathon) throws SQLException;
     void apriIscrizioniHackathon(String hackahton) throws SQLException;

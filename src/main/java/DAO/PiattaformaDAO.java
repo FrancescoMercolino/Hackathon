@@ -1,7 +1,7 @@
 package DAO;
 
-import Model.Hackathon;
-import Model.Team;
+import model.Hackathon;
+import model.Team;
 
 import java.sql.SQLException;
 import java.util.ArrayList;

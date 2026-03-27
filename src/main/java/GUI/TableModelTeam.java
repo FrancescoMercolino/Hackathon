@@ -1,6 +1,6 @@
 package GUI;
 
-import Model.Team;
+import model.Team;
 
 import javax.swing.*;
 import javax.swing.table.AbstractTableModel;

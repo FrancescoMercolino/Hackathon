@@ -1,7 +1,6 @@
 package GUI;
 
-import Controller.ControllerHackathon;
-import Model.Utente;
+import controller.ControllerHackathon;
 
 import javax.swing.*;
 import java.awt.event.ActionEvent;
@@ -27,7 +26,7 @@ public class HomeHackathon {
 
         frame = new JFrame("Home Hackaton");
         frame.setContentPane(new HomeHackathon().panel1);
-        frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.pack();
         frame.setSize(400, 300);
         frame.setVisible(true);
@@ -42,10 +41,11 @@ public class HomeHackathon {
             @Override
             public void actionPerformed(ActionEvent e) {
                 SchermataRegistrazione registrazione = new SchermataRegistrazione(controller, frame);
-                registrazione.frame.setVisible(true);
+                registrazione.mostraPanelRegistrazione();
                 frame.setVisible(false);
             }
         });
+
         loginButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -54,6 +54,7 @@ public class HomeHackathon {
                     if (log) {
                         JOptionPane.showMessageDialog(frame, "Login effettuato!");
                         SchermataUtente partecipante = new SchermataUtente(controller, frame, fieldNome.getText());
+                        fieldNome.setText("");
                         partecipante.frameP.setVisible(true);
                         frame.setVisible(false);
                     } else {
@@ -61,13 +62,10 @@ public class HomeHackathon {
                     }
 
                 } catch (SQLException ex) {
-                    throw new RuntimeException(ex);
+                    JOptionPane.showMessageDialog(frame, ex.getMessage());
                 }
             }
         });
     }
-
-    /* Allora mi mancano
-organizzatore apre e chiude iscrizioni */
 
 }

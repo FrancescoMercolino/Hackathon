@@ -1,7 +1,7 @@
 package DAO;
 
-import Model.Team;
-import Model.Utente;
+import model.Team;
+import model.Utente;
 
 import java.sql.SQLException;
 import java.util.ArrayList;

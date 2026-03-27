@@ -1,7 +1,6 @@
 package GUI;
 
-import Controller.ControllerHackathon;
-import Model.Piattaforma;
+import controller.ControllerHackathon;
 
 import javax.swing.*;
 import java.awt.event.ActionEvent;
@@ -16,10 +15,7 @@ public class SchermataRegistrazione {
     private JButton tornaIndietroButton;
     private JLabel labelNome;
     private JLabel labelPassword;
-
-    private Piattaforma piattaforma;
-
-    public JFrame frame;
+    private JFrame frame;
 
     public SchermataRegistrazione(ControllerHackathon controller, JFrame frameHome) {
         frame = new JFrame("Registrazione");
@@ -27,25 +23,27 @@ public class SchermataRegistrazione {
         frame.setContentPane(panelRegistrazione);
         frame.pack();
         frame.setSize(400, 300);
-        frame.setVisible(true);
-        frame.setLocationRelativeTo(null);
 
 
         confermaButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                if (textNome.getText().isEmpty() || textPassword.getPassword().length == 0 ) {
+
+                String nome = textNome.getText();
+                char[] password = textPassword.getPassword();
+
+                if (nome.isEmpty() || password.length == 0 ) {
                     JOptionPane.showMessageDialog(frame, "Compila i campi");
                     return;
                 }
 
-                if (textPassword.getPassword().length < 6) {
+                if (password.length < 6) {
                     JOptionPane.showMessageDialog(frame, "Password troppo breve");
                     return;
                 }
 
                 try {
-                   boolean sentinella = controller.registraUtenteDB(textNome.getText(), textPassword.getPassword());
+                   boolean sentinella = controller.registraUtenteDB(nome, password);
 
                    if(!sentinella) {
                        JOptionPane.showMessageDialog(panelRegistrazione, "Utente già esistente");
@@ -55,10 +53,11 @@ public class SchermataRegistrazione {
                        frame.dispose();
                    }
                 } catch (SQLException ex) {
-                    throw new RuntimeException(ex);
+                    JOptionPane.showMessageDialog(frame, ex.getMessage());
                 }
             }
         });
+
         tornaIndietroButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -66,5 +65,13 @@ public class SchermataRegistrazione {
                 frame.dispose();
             }
         });
+
+        frame.setVisible(true);
+        frame.setLocationRelativeTo(null);
+
+    }
+
+    public void mostraPanelRegistrazione() {
+        frame.setVisible(true);
     }
 }

@@ -1,6 +1,6 @@
-package Model;
+package model;
 
-public class Giudice extends Utente{
+public class Giudice extends Utente {
 
     //costruttore
     public Giudice(String nome, char[] password) {

@@ -1,6 +1,6 @@
 package DAO;
 
-import Model.Problema;
+import model.Problema;
 
 import java.sql.SQLException;
 

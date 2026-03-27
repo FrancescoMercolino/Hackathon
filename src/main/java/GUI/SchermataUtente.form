@@ -58,14 +58,6 @@
               <text value="Seleziona Giudice"/>
             </properties>
           </component>
-          <component id="42e24" class="javax.swing.JButton" binding="organizzaHackathonButton" default-binding="true">
-            <constraints>
-              <grid row="2" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
-            </constraints>
-            <properties>
-              <text value="Organizza Hackathon"/>
-            </properties>
-          </component>
           <component id="89839" class="javax.swing.JLabel" binding="gestisciHackathon">
             <constraints>
               <grid row="3" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
@@ -161,6 +153,14 @@
               <grid row="7" column="3" row-span="1" col-span="1" vsize-policy="1" hsize-policy="6" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
             </constraints>
           </hspacer>
+          <component id="42e24" class="javax.swing.JButton" binding="organizzaHackathonButton" default-binding="true">
+            <constraints>
+              <grid row="7" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
+            </constraints>
+            <properties>
+              <text value="Organizza Nuovo Hackathon"/>
+            </properties>
+          </component>
         </children>
       </grid>
     </children>

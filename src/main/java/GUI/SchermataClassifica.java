@@ -1,7 +1,7 @@
 package GUI;
 
-import Controller.ControllerHackathon;
-import Model.Team;
+import controller.ControllerHackathon;
+import model.Team;
 
 import javax.swing.*;
 import java.awt.event.ActionEvent;
@@ -20,6 +20,8 @@ public class SchermataClassifica {
     private ControllerHackathon controller;
 
     public SchermataClassifica(ControllerHackathon controller, JFrame frameHome) {
+        this.controller = controller;
+
         this.frame = new JFrame("Schermata Classifica");
         this.frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         this.frame.setContentPane(panelClassifica);
@@ -27,14 +29,7 @@ public class SchermataClassifica {
         this.frame.setVisible(true);
         this.frame.setLocationRelativeTo(null);
 
-        try {
-            ArrayList<String> li = controller.riempiBox(hackathonComboBox);
-            for(String s : li){
-                hackathonComboBox.addItem(s);
-            }
-        }catch(SQLException e){
-            e.printStackTrace();
-        }
+        aggiornaHackathonBox();
 
         TableModelTeam table = new TableModelTeam();
         table1.setModel(table);
@@ -45,8 +40,17 @@ public class SchermataClassifica {
                 String hackathon = hackathonComboBox.getSelectedItem().toString();
                 if(!hackathon.isEmpty() && hackathon != null) {
                     try {
-                        ArrayList<Team> classifica = controller.getClassifica(hackathon);
-                        table.setData(classifica);
+                        String stato = controller.getStato(hackathon);
+                        if(!stato.equals("terminate")) {
+                            JOptionPane.showMessageDialog(frame, "Competizione non ancora terminata.");
+                        }else{
+                            ArrayList<Team> classifica = controller.getClassifica(hackathon);
+                            if(classifica.isEmpty()){
+                                JOptionPane.showMessageDialog(frame, "La classifica non è ancora stata aggiornata.");
+                            }else {
+                                table.setData(classifica);
+                            }
+                        }
                     } catch (SQLException ex) {
                         throw new RuntimeException(ex);
                     }
@@ -63,5 +67,16 @@ public class SchermataClassifica {
             }
         });
 
+    }
+
+    private void aggiornaHackathonBox() {
+        try {
+            ArrayList<String> li = controller.riempiBox();
+            for(String s : li){
+                hackathonComboBox.addItem(s);
+            }
+        }catch(SQLException e){
+            e.printStackTrace();
+        }
     }
 }

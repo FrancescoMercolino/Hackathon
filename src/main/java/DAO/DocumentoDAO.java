@@ -1,6 +1,6 @@
 package DAO;
 
-import Model.Documento;
+import model.Documento;
 
 import java.sql.SQLException;
 

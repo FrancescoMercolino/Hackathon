@@ -1,7 +1,7 @@
-package Controller;
+package controller;
 
 import DAO.*;
-import Model.*;
+import model.*;
 import implementazioneDAO.*;
 
 import javax.swing.*;
@@ -23,6 +23,7 @@ public class ControllerHackathon {
     private Problema problema;
     private Documento documento;
     private Team team;
+    private Hackathon hackathon;
 
     //Costruttore
     public ControllerHackathon() {
@@ -143,7 +144,11 @@ public class ControllerHackathon {
         hackathonDAO.inserisciNuovoHackathon(titolo, sede, dataInizio, dataFine, partecipanti, stato);
     }
 
-    public ArrayList<String> riempiBox(JComboBox comboBox) throws SQLException {
+    public ArrayList<String> getListaHackathonAperti() throws SQLException {
+        return hackathonDAO.getAllHackathonAperti();
+    }
+
+    public ArrayList<String> riempiBox() throws SQLException {
         return hackathonDAO.getAllHackathon();
     }
 
@@ -163,16 +168,38 @@ public class ControllerHackathon {
         return hackathonDAO.teamIscrittiHackathon(hackathon);
     }
 
-    public void apriIscrizioniHackathon(String hackathon) throws SQLException{
-        hackathonDAO.apriIscrizioniHackathon(hackathon);
+    public void apriIscrizioniHackathon(String hackathon) throws SQLException, IllegalStateException{
+        String stato = getStato(hackathon);
+
+        if(stato.equals("chiuse")){
+            hackathonDAO.apriIscrizioniHackathon(hackathon);
+        }else if(stato.equals("aperto")){
+            throw new IllegalStateException("Le iscrizioni per l'hackathon selezionato sono già aperte");
+        }else if(stato.equals("terminate")){
+            throw new IllegalStateException("L'hackathon è terminato.");
+        }
     }
 
-    public void chiudiIscrizioniHackathon(String hackathon) throws SQLException{
-        hackathonDAO.chiudiIscrizioniHackathon(hackathon);
+    public void chiudiIscrizioniHackathon(String hackathon) throws SQLException, IllegalStateException{
+        String stato = getStato(hackathon);
+
+        if(stato.equals("aperto")){
+            hackathonDAO.chiudiIscrizioniHackathon(hackathon);
+        }else if(stato.equals("chiuse")){
+            throw new IllegalStateException("Le iscrizioni per l'hackathon selezionato sono già chiuse");
+        }else if(stato.equals("terminate")){
+            throw new IllegalStateException("L'hackathon è terminato.");
+        }
+
     }
 
-    public void terminaCompetizione(String hackathon) throws SQLException{
-        hackathonDAO.terminaCompetizione(hackathon);
+    public void terminaCompetizione(String hackathon) throws SQLException, IllegalStateException{
+        String stato = getStato(hackathon);
+        if(!stato.equals("terminate")){
+            hackathonDAO.terminaCompetizione(hackathon);
+        }else {
+            throw new IllegalStateException("L'hackathon selezionato è già terminato");
+        }
     }
 
     //Problema

@@ -3,9 +3,9 @@ package implementazioneDAO;
 import DAO.HackathonDAO;
 import DAO.PiattaformaDAO;
 import Database.ConnessioneDatabase;
-import Model.Hackathon;
-import Model.Team;
-import Model.Utente;
+import model.Hackathon;
+import model.Team;
+import model.Utente;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
