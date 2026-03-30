@@ -42,6 +42,11 @@ public class SchermataRegistrazione {
                     return;
                 }
 
+                if (password.length > 20) {
+                    JOptionPane.showMessageDialog(frame, "Password troppo lunga");
+                    return;
+                }
+
                 try {
                    boolean sentinella = controller.registraUtenteDB(nome, password);
 

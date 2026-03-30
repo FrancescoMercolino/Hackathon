@@ -38,21 +38,28 @@ public class SchermataClassifica {
             @Override
             public void actionPerformed(ActionEvent e) {
                 String hackathon = hackathonComboBox.getSelectedItem().toString();
-                if(!hackathon.isEmpty() && hackathon != null) {
+
+                if(!hackathon.isEmpty()) {
                     try {
                         String stato = controller.getStato(hackathon);
-                        if(!stato.equals("terminate")) {
+                        if(!"terminate".equals(stato)) {
+                            table.setData(new ArrayList<>());
                             JOptionPane.showMessageDialog(frame, "Competizione non ancora terminata.");
-                        }else{
-                            ArrayList<Team> classifica = controller.getClassifica(hackathon);
-                            if(classifica.isEmpty()){
-                                JOptionPane.showMessageDialog(frame, "La classifica non è ancora stata aggiornata.");
-                            }else {
-                                table.setData(classifica);
-                            }
+                            return;
                         }
+
+                        ArrayList<Team> classifica = controller.getClassifica(hackathon);
+
+                        if(classifica.isEmpty()){
+                            table.setData(new ArrayList<>());
+                            JOptionPane.showMessageDialog(frame, "La classifica non è ancora stata aggiornata.");
+                        }
+
+                        table.setData(classifica);
+
                     } catch (SQLException ex) {
-                        throw new RuntimeException(ex);
+                        table.setData(new ArrayList<>());
+                        JOptionPane.showMessageDialog(frame, ex.getMessage());
                     }
 
                 }
@@ -71,12 +78,12 @@ public class SchermataClassifica {
 
     private void aggiornaHackathonBox() {
         try {
-            ArrayList<String> li = controller.riempiBox();
-            for(String s : li){
+            ArrayList<String> list = controller.riempiBox();
+            for(String s : list){
                 hackathonComboBox.addItem(s);
             }
         }catch(SQLException e){
-            e.printStackTrace();
+            JOptionPane.showMessageDialog(frame, e.getMessage());
         }
     }
 }

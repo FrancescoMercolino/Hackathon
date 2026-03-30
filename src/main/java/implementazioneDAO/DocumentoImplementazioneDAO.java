@@ -23,38 +23,28 @@ public class DocumentoImplementazioneDAO implements DocumentoDAO {
 
     @Override
     public void aggiungiDocumento(String nomeTeam, String testo) throws SQLException {
+        String query = "INSERT INTO documento (descrizione, team_nome) VALUES (?,?)";
 
-        try{
-            PreparedStatement ps = con.prepareStatement("INSERT INTO documento (descrizione, team_nome) VALUES (?,?)");
+        try(PreparedStatement ps = con.prepareStatement(query)){
             ps.setString(1, testo);
             ps.setString(2, nomeTeam);
-
             ps.executeUpdate();
-
-        } catch (SQLException e) {
-            e.printStackTrace();
-            throw e;
         }
     }
 
     @Override
     public String recuperaDocumento(String nomeTeam) throws SQLException {
         String soluzione = null;
+        String query = "SELECT * FROM documento WHERE team_nome = ?";
 
-        try {
-            PreparedStatement ps = con.prepareStatement("SELECT * FROM documento WHERE team_nome = ?");
+        try (PreparedStatement ps = con.prepareStatement(query)){
             ps.setString(1, nomeTeam);
-            ResultSet rs = ps.executeQuery();
-
-            if (rs.next()) {
-                soluzione = rs.getString("descrizione");
+            try (ResultSet rs = ps.executeQuery()){
+                if (rs.next()) {
+                    soluzione = rs.getString("descrizione");
+                }
             }
-
-        }catch (SQLException e) {
-            e.printStackTrace();
-            throw e;
         }
-
         return soluzione;
     }
 }

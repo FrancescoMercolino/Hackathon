@@ -22,36 +22,31 @@ public class ProblemaImplementazioneDAO implements ProblemaDAO {
 
     @Override
     public void pubblicaProblema(String giudice, String problema, String Hackathon) throws SQLException {
-        try {
-            PreparedStatement ps = con.prepareStatement("SELECT pubblica_problema(?, ?, ?)");
+        String query = "SELECT pubblica_problema(?, ?, ?)";
+
+        try(PreparedStatement ps = con.prepareStatement(query)){
             ps.setString(1, problema);
             ps.setString(2, Hackathon);
             ps.setString(3, giudice);
             ps.execute();
-        } catch (SQLException e) {
-            e.printStackTrace();
-            throw e;
         }
     }
 
     @Override
     public String leggiProblema(String hackathon) throws SQLException{
 
-        String prob = null;
+        String problema;
+        String query = "SELECT descrizione_problema FROM problema WHERE hackathon = ?";
 
-        try {
-            PreparedStatement ps = con.prepareStatement("SELECT descrizione_problema FROM problema WHERE hackathon = ?");
+        try (PreparedStatement ps = con.prepareStatement(query)){
             ps.setString(1, hackathon);
-            ResultSet rs = ps.executeQuery();
 
-            if (rs.next()) {
-                prob = rs.getString("descrizione_problema");
+            try (ResultSet rs = ps.executeQuery()){
+                if (rs.next() ) {
+                    return rs.getString("descrizione_problema");
+                }
             }
-        }catch (SQLException e) {
-            e.printStackTrace();
-            throw e;
         }
-
-        return prob;
+        return null;
     }
 }

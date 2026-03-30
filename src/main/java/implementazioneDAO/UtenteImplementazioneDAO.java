@@ -22,68 +22,61 @@ public class UtenteImplementazioneDAO implements DAO.UtenteDAO {
 
     @Override
     public boolean registraUtente(String nome, char[] password) throws SQLException {
-        //controllo che nome non sia già inserito
-        try {
-            PreparedStatement controllo = con.prepareStatement("SELECT COUNT(*) FROM partecipante WHERE LOWER(nome) = LOWER(?)");
-            controllo.setString(1, nome);
-            ResultSet rs = controllo.executeQuery();
+        String query = "SELECT COUNT(*) FROM partecipante WHERE LOWER(nome) = LOWER(?)";
+        String query2 = "INSERT INTO partecipante (nome, pwd) VALUES ( ?, ?)";
 
-            if (rs.next()) {
-                int count = rs.getInt(1);
-                if (count > 0) {
-                    return false;
+        //controllo che nome non sia già inserito
+        try (PreparedStatement controllo = con.prepareStatement(query);){
+            controllo.setString(1, nome);
+            try(ResultSet rs = controllo.executeQuery();){
+
+                if (rs.next()) {
+                    int count = rs.getInt(1);
+                    if (count > 0) {
+                        return false;
+                    }
                 }
             }
 
             //Non esiste già in database, procedi ad inserire
-            PreparedStatement ps = con.prepareStatement("INSERT INTO partecipante (nome, pwd) VALUES ( ?, ?)");
-            ps.setString(1, nome);
-            ps.setString(2, new String(password));
+            try (PreparedStatement ps = con.prepareStatement(query2);) {
+                ps.setString(1, nome);
+                ps.setString(2, new String(password));
 
-            ps.executeUpdate();
-        } catch (SQLException e) {
-            e.printStackTrace();
-            return false;
+                ps.executeUpdate();
+            }
+
         }
         return true;
     }
 
     @Override
      public boolean eseguiLoginDB(String nome, char[] password) throws SQLException {
-
         boolean login;
-        try {
-            PreparedStatement ps = con.prepareStatement("SELECT 1 FROM login WHERE nome = ? AND pwd = ? ");
-
+        String query = "SELECT 1 FROM login WHERE nome = ? AND pwd = ? ";
+        try(PreparedStatement ps = con.prepareStatement(query)){
             ps.setString(1, nome);
             ps.setString(2, new String(password));
 
-            ResultSet rs = ps.executeQuery();
-
-            login = rs.next();
-
-        } catch(SQLException e){
-            e.printStackTrace();
-            return false;
-         }
-
+            try(ResultSet rs = ps.executeQuery()){
+                login = rs.next();
+            }
+        }
         return login;
      }
 
      public boolean faParteTeam(String nome) throws SQLException {
         boolean team = false;
+        String query = "SELECT nome_team FROM partecipante WHERE nome = ? AND nome_team IS NOT NULL";
 
-        try {
-            PreparedStatement ps = con.prepareStatement("SELECT nome_team FROM partecipante WHERE nome = ? AND nome_team IS NOT NULL");
+        try (PreparedStatement ps = con.prepareStatement(query);){
             ps.setString(1, nome);
-            ResultSet rs = ps.executeQuery();
+            try(ResultSet rs = ps.executeQuery()){
+                if (rs.next()) {
+                    team = true;
+                }
 
-            if (rs.next()) {
-                team = true;
             }
-
-        } catch (SQLException e) {
-            e.printStackTrace();
         }
         return team;
      }
@@ -92,17 +85,16 @@ public class UtenteImplementazioneDAO implements DAO.UtenteDAO {
 
         String[] tabella = {"organizzatore", "giudice", "partecipante"};
 
+
         for(String tabella1 : tabella) {
-            try {
-                PreparedStatement privilegio = con.prepareStatement("Select 1 FROM " + tabella1 + " WHERE LOWER(nome) = LOWER(?)");
+            String query = "Select 1 FROM " + tabella1 + " WHERE LOWER(nome) = LOWER(?)";
+            try (PreparedStatement privilegio = con.prepareStatement(query);){
                 privilegio.setString(1, nome);
-                ResultSet rs = privilegio.executeQuery();
-                if(rs.next()) {
-                    return tabella1;
+                try(ResultSet rs = privilegio.executeQuery()){
+                    if(rs.next()) {
+                        return tabella1;
+                    }
                 }
-            }catch(SQLException e){
-                e.printStackTrace();
-                throw e;
             }
         }
 
@@ -110,62 +102,53 @@ public class UtenteImplementazioneDAO implements DAO.UtenteDAO {
      }
 
     public boolean inserisciGiudice(String nome, String organizzatore) throws SQLException{
+        String query = "SELECT pwd FROM partecipante WHERE LOWER(nome) = LOWER(?)";
+        String query2 = "INSERT INTO giudice VALUES (?, ?, ?)";
 
-        try {
-            PreparedStatement getinfo = con.prepareStatement("SELECT pwd FROM partecipante WHERE LOWER(nome) = LOWER(?)");
+        try (PreparedStatement getinfo = con.prepareStatement(query);){
             getinfo.setString(1, nome);
-            ResultSet rs = getinfo.executeQuery();
             String password;
 
-            if(rs.next()) {
-                password = rs.getString(1);
-            } else {
-
-                return false;
+            try(ResultSet rs = getinfo.executeQuery()){
+                if(rs.next()) {
+                    password = rs.getString(1);
+                } else {
+                    return false;
+                }
             }
 
-            PreparedStatement ps = con.prepareStatement("INSERT INTO giudice VALUES (?, ?, ?)");
-            ps.setString(1, nome);
-            ps.setString(2, password);
-            ps.setString(3, organizzatore);
-            ps.executeUpdate();
-
-
-        }catch(SQLException e) {
-            e.printStackTrace();
-            throw e;
+            try(PreparedStatement ps = con.prepareStatement(query2)) {
+                ps.setString(1, nome);
+                ps.setString(2, password);
+                ps.setString(3, organizzatore);
+                ps.executeUpdate();
+            }
         }
-
         return true;
     }
 
     public void votaSoluzione(String giudice, String nomeTeam, int voto) throws SQLException {
+        String query = "INSERT INTO voto VALUES (?, ?, ?)";
 
-        try{
-            PreparedStatement vota = con.prepareStatement("INSERT INTO voto VALUES (?, ?, ?)");
+        try(PreparedStatement vota = con.prepareStatement(query)){
             vota.setString(1, giudice);
             vota.setString(2, nomeTeam);
             vota.setInt(3, voto);
             vota.executeUpdate();
 
-        }catch (SQLException e) {
-            e.printStackTrace();
-            throw e;
         }
     }
 
     public boolean utenteEsiste(String nome) throws SQLException{
+        String query = "SELECT 1 FROM partecipante WHERE nome = ? ";
 
-        try{
-            PreparedStatement controllo = con.prepareStatement("SELECT 1 FROM partecipante WHERE nome = ? ");
+        try(PreparedStatement controllo = con.prepareStatement(query)){
             controllo.setString(1, nome);
-            ResultSet rs = controllo.executeQuery();
-            if(rs.next()) {
-                return true;
+            try(ResultSet rs = controllo.executeQuery()){
+                if(rs.next()) {
+                    return true;
+                }
             }
-        }catch(SQLException ex) {
-            ex.printStackTrace();
-            throw ex;
         }
         return false;
     }

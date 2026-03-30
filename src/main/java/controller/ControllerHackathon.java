@@ -12,7 +12,6 @@ import java.util.Date;
 public class ControllerHackathon {
 
     //Attributi
-    private PiattaformaDAO piattaformaDAO;
     private UtenteDAO utenteDAO;
     private HackathonDAO hackathonDAO;
     private TeamDAO teamDAO;
@@ -28,7 +27,6 @@ public class ControllerHackathon {
     //Costruttore
     public ControllerHackathon() {
         this.utenteDAO = new UtenteImplementazioneDAO();
-        this.piattaformaDAO = new PiattaformaImplementazioneDAO();
         this.hackathonDAO = new HackathonImplementazioneDAO();
         this.teamDAO = new TeamImplementazioneDAO();
         this.problemaDAO = new ProblemaImplementazioneDAO();
@@ -85,6 +83,10 @@ public class ControllerHackathon {
     }
 
     public boolean inserisciGiudice(String nome, String organizzatore) throws SQLException {
+        boolean faParteTeam = faParteTeam(nome);
+        if(faParteTeam) {
+            throw new IllegalStateException("L'utente selezionato è attivo in un team");
+        }
         return utenteDAO.inserisciGiudice(nome, organizzatore);
     }
 
@@ -100,11 +102,19 @@ public class ControllerHackathon {
         this.team.addUtente(utente);
 
         //salva nel DB
-        return piattaformaDAO.registraTeam(nome, nomeTeam);
+        return teamDAO.registraTeam(nome, nomeTeam);
     }
 
     public void iscriviHackathon(String nomeTeam, String nomeHackathon) throws SQLException {
         Hackathon hackathon = hackathonDAO.getHackathonFromDB(nomeHackathon);
+        String stato = hackathonDAO.getStatoHackathon(nomeHackathon);
+
+        if(!"aperto".equals(stato)){
+            throw new SQLException("Iscrizioni terminate per: " + nomeHackathon);
+        }
+        if (teamIscrittiHackathon(nomeHackathon) >= maxIscrittiHackathon(nomeHackathon)) {
+            throw new SQLException("Impossibile iscriversi ad: " + nomeHackathon +" numero massimo partecipanti raggiunto");
+        }
         team.iscriviHackathon(hackathon);
         teamDAO.iscrivitiAllHackathon(nomeTeam, nomeHackathon);
     }
@@ -133,9 +143,9 @@ public class ControllerHackathon {
         return teamDAO.recuperaIscrizioneHackathon(nomeTeam);
     }
 
-    //piattaforma
+    //Classifica
     public ArrayList<Team> getClassifica(String hackathon) throws SQLException {
-        return piattaformaDAO.getClassifica(hackathon);
+        return teamDAO.getClassifica(hackathon);
     }
 
     //Hackathon
@@ -208,7 +218,20 @@ public class ControllerHackathon {
     }
 
     public String recuperaProblema(String hackathon) throws SQLException {
-        return problemaDAO.leggiProblema(hackathon);
+
+        String stato = getStato(hackathon);
+
+        if("aperto".equals(stato)){
+            throw new SQLException("Hackathon non ancora inziato");
+        }
+
+        String problema = problemaDAO.leggiProblema(hackathon);
+
+        if(problema == null) {
+            throw new IllegalArgumentException("Problema non ancora pubblicato");
+        }
+
+        return problema;
     }
 
     //Documento
@@ -220,4 +243,7 @@ public class ControllerHackathon {
         return documentoDAO.recuperaDocumento(nomeTeam);
     }
 
+    public boolean votoPresente(String teamCorrente) throws SQLException{
+        return teamDAO.votoPresente(teamCorrente);
+    }
 }

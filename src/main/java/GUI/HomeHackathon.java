@@ -34,7 +34,6 @@ public class HomeHackathon {
     }
 
     public HomeHackathon() {
-
         controller = new ControllerHackathon();
 
         registrarsiButton.addActionListener(new ActionListener() {
@@ -55,6 +54,7 @@ public class HomeHackathon {
                         JOptionPane.showMessageDialog(frame, "Login effettuato!");
                         SchermataUtente partecipante = new SchermataUtente(controller, frame, fieldNome.getText());
                         fieldNome.setText("");
+                        fieldPassword.setText("");
                         partecipante.frameP.setVisible(true);
                         frame.setVisible(false);
                     } else {

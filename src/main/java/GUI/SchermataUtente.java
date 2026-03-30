@@ -40,11 +40,9 @@ public class SchermataUtente {
         frameP.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
         String tipo = controller.tipoUtente(username);
-        aggiornaBottoni(controller, username, tipo); //choose which button will be visible
+        aggiornaBottoni(controller, username, tipo);
 
         frameP.setMinimumSize(frameP.getSize());
-        frameP.pack();
-        frameP.setLocationRelativeTo(null);
 
         labelUtente.setText("Benvenuto: " + username);
         aggiornaBox();
@@ -69,7 +67,7 @@ public class SchermataUtente {
                        }
                     }
                 }catch (SQLException ex) {
-                    ex.printStackTrace();
+                    JOptionPane.showMessageDialog(frameP, ex.getMessage());
                 }
             }
 
@@ -104,6 +102,7 @@ public class SchermataUtente {
                 frameP.setVisible(false);
             }
         });
+
         selezionaGiudiceButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -130,7 +129,8 @@ public class SchermataUtente {
                         }
                     }catch(SQLException ex) {
                         JOptionPane.showMessageDialog(frameP, ex);
-                        ex.printStackTrace();
+                    }catch (IllegalStateException es) {
+                        JOptionPane.showMessageDialog(frameP, es);
                     }
             }
         });
@@ -152,14 +152,17 @@ public class SchermataUtente {
                 }
             }
         });
+
         valutaSoluzioniButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
+                String hackathon = hackathonBox.getSelectedItem().toString();
+
                 try {
-                    ArrayList<String> listaTeam = controller.recuperaIscrizioni(hackathonBox.getSelectedItem().toString());
+                    ArrayList<String> listaTeam = controller.recuperaIscrizioni(hackathon);
 
                     String[] teamArray = listaTeam.toArray(new String[0]);
-                    int seleziona = JOptionPane.showOptionDialog(null, "Seleziona team:", "Boh", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE, null, teamArray, teamArray[0]);
+                    int seleziona = JOptionPane.showOptionDialog(null, "Seleziona team:", "Team", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE, null, teamArray, teamArray[0]);
 
                     if(seleziona >= 0) {
                         String soluzione = controller.recuperaDocumento(teamArray[seleziona]);
@@ -172,23 +175,34 @@ public class SchermataUtente {
 
 
                 } catch (SQLException ex) {
-                    throw new RuntimeException(ex);
+                    JOptionPane.showMessageDialog(frameP, ex);
                 } catch (ArrayIndexOutOfBoundsException ex) {
                     JOptionPane.showMessageDialog(frameP, "Non ci sono team registrati");
                 }
 
             }
         });
+
         assegnaVotoButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
+                String hackathon = hackathonBox.getSelectedItem().toString();
+
                 try {
-                    ArrayList<String> listaTeam = controller.recuperaIscrizioni(hackathonBox.getSelectedItem().toString());
+                    ArrayList<String> listaTeam = controller.recuperaIscrizioni(hackathon);
 
                     String[] teamArray = listaTeam.toArray(new String[0]);
                     int seleziona = JOptionPane.showOptionDialog(null, "Seleziona team:", "Team", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE, null, teamArray, teamArray[0]);
 
                     if(seleziona >= 0) {
+
+                        String teamCorrente = listaTeam.get(seleziona);
+
+                        if(controller.votoPresente(teamCorrente)){
+                            JOptionPane.showMessageDialog(null, "Il team ha già un voto");
+                            return;
+                        }
+
                         int voto = Integer.parseInt(JOptionPane.showInputDialog(null, "Inserisci voto al team:", "Votare", JOptionPane.PLAIN_MESSAGE));
                         controller.votaSoluzione(username, teamArray[seleziona], voto);
                     }
@@ -200,6 +214,7 @@ public class SchermataUtente {
                 }
             }
         });
+
         organizzaHackathonButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -246,8 +261,10 @@ public class SchermataUtente {
         apriIscrizioniButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
+                String hackathon = hackathonBox.getSelectedItem().toString();
+
                 try{
-                    controller.apriIscrizioniHackathon(hackathonBox.getSelectedItem().toString());
+                    controller.apriIscrizioniHackathon(hackathon);
                     JOptionPane.showMessageDialog(frameP, "Iscrizioni aperte.");
                 }catch (IllegalStateException ex){
                     JOptionPane.showMessageDialog(frameP, ex.getMessage());
@@ -260,7 +277,20 @@ public class SchermataUtente {
         terminaCompetizioneButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
+
+                String hackathon = hackathonBox.getSelectedItem().toString();
+
+                try {
+                    if("terminate".equals(controller.getStato(hackathon))) {
+                        JOptionPane.showMessageDialog(frameP, "Hackathon già terminato");
+                        return;
+                    }
+                } catch (SQLException ex) {
+                    JOptionPane.showMessageDialog(frameP, ex.getMessage());
+                }
+
                 int scelta = JOptionPane.showConfirmDialog(null, "Terminare competizione?", "ATTENZION", JOptionPane.YES_NO_OPTION);
+
                 if (scelta == JOptionPane.YES_OPTION) {
                     try {
                     controller.terminaCompetizione(hackathonBox.getSelectedItem().toString());
@@ -273,11 +303,14 @@ public class SchermataUtente {
                 }
             }
         });
+
         chiudiIscrizioniButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
+                String hackathon = hackathonBox.getSelectedItem().toString();
+
                 try{
-                    controller.chiudiIscrizioniHackathon(hackathonBox.getSelectedItem().toString());
+                    controller.chiudiIscrizioniHackathon(hackathon);
                     JOptionPane.showMessageDialog(frameP, "Iscrizioni chiuse.");
                 }catch(IllegalStateException ex){
                     JOptionPane.showMessageDialog(frameP, ex.getMessage());
@@ -287,6 +320,8 @@ public class SchermataUtente {
             }
         });
 
+        frameP.pack();
+        frameP.setLocationRelativeTo(null);
         frameP.setVisible(true);
     }
 
